@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.binary;
 
 import com.google.common.primitives.Longs;
@@ -28,49 +27,35 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class IncrRequest extends BinaryRequest<Long> {
-  private final OpCode opcode;
-  private final long by;
-  private final long initial;
-  private final int ttl;
 
-  public IncrRequest(
-      final byte[] key, final OpCode opcode, final long by, final long initial, final int ttl) {
-    super(key);
-    this.opcode = opcode;
-    this.by = by;
-    this.initial = initial;
-    this.ttl = ttl;
-  }
+    private final OpCode opcode;
 
-  @Override
-  public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
-    final int expiration = Utils.ttlToExpiration(ttl);
+    private final long by;
 
-    final int extraLength = 8 + 8 + 4; // by + initial + expiration
+    private final long initial;
 
-    writeHeader(dst, opcode, extraLength, 0, 0);
-    dst.putLong(by);
-    dst.putLong(initial);
-    dst.putInt(expiration);
-    dst.put(key);
-    return toBuffer(alloc, dst);
-  }
+    private final int ttl;
 
-  @Override
-  public Request<Long> duplicate() {
-    return new IncrRequest(key, opcode, by, initial, ttl);
-  }
-
-  @Override
-  public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
-    final ResponsePacket reply = handleSingleReply(replies);
-
-    if (reply.status == MemcacheStatus.OK) {
-      succeed(Longs.fromByteArray(reply.value));
-    } else if (reply.status == MemcacheStatus.KEY_NOT_FOUND) {
-      succeed(null);
-    } else {
-      throw new IOException("Unexpected response: " + reply.status);
+    public IncrRequest(final byte[] key, final OpCode opcode, final long by, final long initial, final int ttl) {
+        super(key);
+        this.opcode = opcode;
+        this.by = by;
+        this.initial = initial;
+        this.ttl = ttl;
     }
-  }
+
+    @Override
+    public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Request<Long> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

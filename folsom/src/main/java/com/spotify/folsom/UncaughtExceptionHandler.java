@@ -20,10 +20,10 @@ import org.slf4j.LoggerFactory;
 
 class UncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {
 
-  private static final Logger log = LoggerFactory.getLogger(UncaughtExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(UncaughtExceptionHandler.class);
 
-  @Override
-  public void uncaughtException(final Thread t, final Throwable e) {
-    log.error("uncaught exception", e);
-  }
+    @Override
+    public void uncaughtException(final Thread t, final Throwable e) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

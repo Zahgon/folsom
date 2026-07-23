@@ -20,32 +20,26 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractRawMemcacheClient implements RawMemcacheClient {
-  private final Set<ConnectionChangeListener> listeners = ConcurrentHashMap.newKeySet();
 
-  @Override
-  public void registerForConnectionChanges(final ConnectionChangeListener listener) {
-    listeners.add(listener);
-    listener.connectionChanged(this);
-  }
+    private final Set<ConnectionChangeListener> listeners = ConcurrentHashMap.newKeySet();
 
-  @Override
-  public void unregisterForConnectionChanges(final ConnectionChangeListener listener) {
-    listeners.remove(listener);
-  }
-
-  @Override
-  public final void notifyConnectionChange() {
-    for (final ConnectionChangeListener listener : listeners) {
-      try {
-        listener.connectionChanged(this);
-      } catch (Exception e) {
-        // We can't really do anything about this
-      }
+    @Override
+    public void registerForConnectionChanges(final ConnectionChangeListener listener) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-  }
 
-  @VisibleForTesting
-  protected int numListeners() {
-    return listeners.size();
-  }
+    @Override
+    public void unregisterForConnectionChanges(final ConnectionChangeListener listener) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public final void notifyConnectionChange() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @VisibleForTesting
+    protected int numListeners() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

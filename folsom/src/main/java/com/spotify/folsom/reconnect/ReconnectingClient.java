@@ -45,282 +45,176 @@ import org.slf4j.LoggerFactory;
 
 public class ReconnectingClient extends AbstractRawMemcacheClient {
 
-  private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE =
-      Executors.newScheduledThreadPool(
-          1,
-          new ThreadFactoryBuilder().setDaemon(true).setNameFormat("folsom-reconnecter").build());
+    private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(1, new ThreadFactoryBuilder().setDaemon(true).setNameFormat("folsom-reconnecter").build());
 
-  private static final Logger log = LoggerFactory.getLogger(ReconnectingClient.class);
+    private static final Logger log = LoggerFactory.getLogger(ReconnectingClient.class);
 
-  private final BackoffFunction backoffFunction;
-  private final ScheduledExecutorService scheduledExecutorService;
-  private final com.spotify.folsom.reconnect.Connector connector;
-  private final HostAndPort address;
-  private final ReconnectionListener reconnectionListener;
+    private final BackoffFunction backoffFunction;
 
-  private volatile RawMemcacheClient client = NotConnectedClient.INSTANCE;
-  private volatile int reconnectCount = 0;
-  private volatile boolean stayConnected = true;
-  private volatile Throwable connectionFailure;
+    private final ScheduledExecutorService scheduledExecutorService;
 
-  public ReconnectingClient(
-      final BackoffFunction backoffFunction,
-      final ScheduledExecutorService scheduledExecutorService,
-      final HostAndPort address,
-      final ReconnectionListener reconnectionListener,
-      final int outstandingRequestLimit,
-      final int eventLoopThreadFlushMaxBatchSize,
-      final boolean binary,
-      final Authenticator authenticator,
-      final Executor executor,
-      final long connectionTimeoutMillis,
-      final Charset charset,
-      final Metrics metrics,
-      final int maxSetLength,
-      final EventLoopGroup eventLoopGroup,
-      final Class<? extends Channel> channelClass,
-      final SSLEngineFactory sslEngineFactory) {
-    this(
-        backoffFunction,
-        scheduledExecutorService,
-        () ->
-            DefaultRawMemcacheClient.connect(
-                address,
-                outstandingRequestLimit,
-                eventLoopThreadFlushMaxBatchSize,
-                binary,
-                executor,
-                connectionTimeoutMillis,
-                charset,
-                metrics,
-                maxSetLength,
-                eventLoopGroup,
-                channelClass,
-                sslEngineFactory),
-        authenticator,
-        address,
-        reconnectionListener);
-  }
+    private final com.spotify.folsom.reconnect.Connector connector;
 
-  public ReconnectingClient(
-      final BackoffFunction backoffFunction,
-      final ScheduledExecutorService scheduledExecutorService,
-      final HostAndPort address,
-      final int outstandingRequestLimit,
-      final int eventLoopThreadFlushMaxBatchSize,
-      final boolean binary,
-      final Authenticator authenticator,
-      final Executor executor,
-      final long connectionTimeoutMillis,
-      final Charset charset,
-      final Metrics metrics,
-      final int maxSetLength,
-      final EventLoopGroup eventLoopGroup,
-      final Class<? extends Channel> channelClass,
-      final SSLEngineFactory sslEngineFactory) {
-    this(
-        backoffFunction,
-        scheduledExecutorService,
-        () ->
-            DefaultRawMemcacheClient.connect(
-                address,
-                outstandingRequestLimit,
-                eventLoopThreadFlushMaxBatchSize,
-                binary,
-                executor,
-                connectionTimeoutMillis,
-                charset,
-                metrics,
-                maxSetLength,
-                eventLoopGroup,
-                channelClass,
-                sslEngineFactory),
-        authenticator,
-        address,
-        new StandardReconnectionListener());
-  }
+    private final HostAndPort address;
 
-  private ReconnectingClient(
-      final BackoffFunction backoffFunction,
-      final ScheduledExecutorService scheduledExecutorService,
-      final Connector connector,
-      final Authenticator authenticator,
-      final HostAndPort address,
-      final ReconnectionListener reconnectionListener) {
-    this(
-        backoffFunction,
-        scheduledExecutorService,
-        () -> AuthenticatingClient.authenticate(connector, authenticator),
-        address,
-        reconnectionListener);
-  }
+    private final ReconnectionListener reconnectionListener;
 
-  ReconnectingClient(
-      final BackoffFunction backoffFunction,
-      final ScheduledExecutorService scheduledExecutorService,
-      final com.spotify.folsom.reconnect.Connector connector,
-      final HostAndPort address,
-      final ReconnectionListener reconnectionListener) {
-    super();
-    this.backoffFunction = backoffFunction;
-    this.scheduledExecutorService = scheduledExecutorService;
-    this.connector = connector;
-    this.reconnectionListener = reconnectionListener;
+    private volatile RawMemcacheClient client = NotConnectedClient.INSTANCE;
 
-    this.address = address;
-    retry();
-  }
+    private volatile int reconnectCount = 0;
 
-  @Override
-  public <T> CompletionStage<T> send(final Request<T> request) {
-    return client.send(request);
-  }
+    private volatile boolean stayConnected = true;
 
-  @Override
-  public void shutdown() {
-    stayConnected = false;
-    client.shutdown();
-    notifyConnectionChange();
-  }
+    private volatile Throwable connectionFailure;
 
-  @Override
-  public boolean isConnected() {
-    return client.isConnected();
-  }
+    public ReconnectingClient(final BackoffFunction backoffFunction, final ScheduledExecutorService scheduledExecutorService, final HostAndPort address, final ReconnectionListener reconnectionListener, final int outstandingRequestLimit, final int eventLoopThreadFlushMaxBatchSize, final boolean binary, final Authenticator authenticator, final Executor executor, final long connectionTimeoutMillis, final Charset charset, final Metrics metrics, final int maxSetLength, final EventLoopGroup eventLoopGroup, final Class<? extends Channel> channelClass, final SSLEngineFactory sslEngineFactory) {
+        this(backoffFunction, scheduledExecutorService, () -> DefaultRawMemcacheClient.connect(address, outstandingRequestLimit, eventLoopThreadFlushMaxBatchSize, binary, executor, connectionTimeoutMillis, charset, metrics, maxSetLength, eventLoopGroup, channelClass, sslEngineFactory), authenticator, address, reconnectionListener);
+    }
 
-  @Override
-  public Throwable getConnectionFailure() {
-    return connectionFailure;
-  }
+    public ReconnectingClient(final BackoffFunction backoffFunction, final ScheduledExecutorService scheduledExecutorService, final HostAndPort address, final int outstandingRequestLimit, final int eventLoopThreadFlushMaxBatchSize, final boolean binary, final Authenticator authenticator, final Executor executor, final long connectionTimeoutMillis, final Charset charset, final Metrics metrics, final int maxSetLength, final EventLoopGroup eventLoopGroup, final Class<? extends Channel> channelClass, final SSLEngineFactory sslEngineFactory) {
+        this(backoffFunction, scheduledExecutorService, () -> DefaultRawMemcacheClient.connect(address, outstandingRequestLimit, eventLoopThreadFlushMaxBatchSize, binary, executor, connectionTimeoutMillis, charset, metrics, maxSetLength, eventLoopGroup, channelClass, sslEngineFactory), authenticator, address, new StandardReconnectionListener());
+    }
 
-  @Override
-  public int numTotalConnections() {
-    return client.numTotalConnections();
-  }
+    private ReconnectingClient(final BackoffFunction backoffFunction, final ScheduledExecutorService scheduledExecutorService, final Connector connector, final Authenticator authenticator, final HostAndPort address, final ReconnectionListener reconnectionListener) {
+        this(backoffFunction, scheduledExecutorService, () -> AuthenticatingClient.authenticate(connector, authenticator), address, reconnectionListener);
+    }
 
-  @Override
-  public int numActiveConnections() {
-    return client.numActiveConnections();
-  }
+    ReconnectingClient(final BackoffFunction backoffFunction, final ScheduledExecutorService scheduledExecutorService, final com.spotify.folsom.reconnect.Connector connector, final HostAndPort address, final ReconnectionListener reconnectionListener) {
+        super();
+        this.backoffFunction = backoffFunction;
+        this.scheduledExecutorService = scheduledExecutorService;
+        this.connector = connector;
+        this.reconnectionListener = reconnectionListener;
+        this.address = address;
+        retry();
+    }
 
-  @Override
-  public int numPendingRequests() {
-    return this.client.numPendingRequests();
-  }
+    @Override
+    public <T> CompletionStage<T> send(final Request<T> request) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public Stream<AddressAndClient> streamNodes() {
-    return client.streamNodes();
-  }
+    @Override
+    public void shutdown() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  private void retry() {
-    try {
-      final CompletionStage<RawMemcacheClient> future = connector.connect();
-      future.whenComplete(
-          (newClient, t) -> {
-            if (t != null) {
-              this.reconnectionListener.connectionFailure(t);
+    @Override
+    public boolean isConnected() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-              if (t instanceof CompletionException
-                  && t.getCause() instanceof MemcacheAuthenticationException) {
-                connectionFailure = t.getCause();
-                shutdown();
-                return;
-              }
-              ReconnectingClient.this.onFailure(t);
-            } else {
-              reconnectionListener.reconnectionSuccessful(address, reconnectCount, stayConnected);
-              reconnectCount = 0;
-              client.shutdown();
-              client = newClient;
+    @Override
+    public Throwable getConnectionFailure() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-              // Protection against races with shutdown()
-              if (!stayConnected) {
-                reconnectionListener.reconnectionCancelled();
-                newClient.shutdown();
-                notifyConnectionChange();
-                return;
-              }
+    @Override
+    public int numTotalConnections() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-              notifyConnectionChange();
-              newClient
-                  .disconnectFuture()
-                  .whenComplete(
-                      (unused, throwable) ->
-                          reconnectionListener.connectionLost(throwable, address))
-                  .thenRun(
-                      () -> {
+    @Override
+    public int numActiveConnections() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public int numPendingRequests() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Stream<AddressAndClient> streamNodes() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    private void retry() {
+        try {
+            final CompletionStage<RawMemcacheClient> future = connector.connect();
+            future.whenComplete((newClient, t) -> {
+                if (t != null) {
+                    this.reconnectionListener.connectionFailure(t);
+                    if (t instanceof CompletionException && t.getCause() instanceof MemcacheAuthenticationException) {
+                        connectionFailure = t.getCause();
+                        shutdown();
+                        return;
+                    }
+                    ReconnectingClient.this.onFailure(t);
+                } else {
+                    reconnectionListener.reconnectionSuccessful(address, reconnectCount, stayConnected);
+                    reconnectCount = 0;
+                    client.shutdown();
+                    client = newClient;
+                    // Protection against races with shutdown()
+                    if (!stayConnected) {
+                        reconnectionListener.reconnectionCancelled();
+                        newClient.shutdown();
+                        notifyConnectionChange();
+                        return;
+                    }
+                    notifyConnectionChange();
+                    newClient.disconnectFuture().whenComplete((unused, throwable) -> reconnectionListener.connectionLost(throwable, address)).thenRun(() -> {
                         notifyConnectionChange();
                         if (stayConnected) {
-                          retry();
+                            retry();
                         }
-                      });
+                    });
+                }
+            });
+        } catch (final Exception e) {
+            ReconnectingClient.this.onFailure(e);
+        }
+    }
+
+    private void onFailure(final Throwable cause) {
+        if (!stayConnected) {
+            this.reconnectionListener.reconnectionCancelled();
+            return;
+        }
+        final long backOff = backoffFunction.getBackoffTimeMillis(reconnectCount);
+        reconnectCount++;
+        this.reconnectionListener.reconnectionQueuedFromError(cause, address, backOff, reconnectCount);
+        scheduledExecutorService.schedule(() -> {
+            if (stayConnected) {
+                retry();
             }
-          });
-    } catch (final Exception e) {
-      ReconnectingClient.this.onFailure(e);
-    }
-  }
-
-  private void onFailure(final Throwable cause) {
-    if (!stayConnected) {
-      this.reconnectionListener.reconnectionCancelled();
-      return;
+        }, backOff, TimeUnit.MILLISECONDS);
     }
 
-    final long backOff = backoffFunction.getBackoffTimeMillis(reconnectCount);
-
-    reconnectCount++;
-    this.reconnectionListener.reconnectionQueuedFromError(cause, address, backOff, reconnectCount);
-
-    scheduledExecutorService.schedule(
-        () -> {
-          if (stayConnected) {
-            retry();
-          }
-        },
-        backOff,
-        TimeUnit.MILLISECONDS);
-  }
-
-  public static ScheduledExecutorService singletonExecutor() {
-    return SCHEDULED_EXECUTOR_SERVICE;
-  }
-
-  @Override
-  public String toString() {
-    return "Reconnecting(" + client + ")";
-  }
-
-  /**
-   * This class should be regarded as <b>internal API</b>. We recognise it may be useful outside
-   * internals, to which end it is exposed. All methods are <b>unstable</b> and can change with
-   * breakage in patch versions. If you just want your own listener with a stable API, you could
-   * extend {@link AbstractReconnectionListener} yourself and delegate calls to this.
-   */
-  public static class StandardReconnectionListener extends AbstractReconnectionListener {
-
-    public StandardReconnectionListener() {}
-
-    @Override
-    public void connectionLost(final @Nullable Throwable cause, final HostAndPort address) {
-      log.info("Lost connection to {}", address);
+    public static ScheduledExecutorService singletonExecutor() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
     @Override
-    public void reconnectionSuccessful(
-        final HostAndPort address, final int attempt, final boolean willStayConnected) {
-      log.info("Successfully connected to {}", address);
+    public String toString() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    @Override
-    public void reconnectionQueuedFromError(
-        final Throwable cause,
-        final HostAndPort address,
-        final long backOffMillis,
-        final int attempt) {
-      log.warn(
-          "Attempting reconnect to {} in {} ms (retry number {})", address, backOffMillis, attempt);
+    /**
+     * This class should be regarded as <b>internal API</b>. We recognise it may be useful outside
+     * internals, to which end it is exposed. All methods are <b>unstable</b> and can change with
+     * breakage in patch versions. If you just want your own listener with a stable API, you could
+     * extend {@link AbstractReconnectionListener} yourself and delegate calls to this.
+     */
+    public static class StandardReconnectionListener extends AbstractReconnectionListener {
+
+        public StandardReconnectionListener() {
+        }
+
+        @Override
+        public void connectionLost(@Nullable final Throwable cause, final HostAndPort address) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+
+        @Override
+        public void reconnectionSuccessful(final HostAndPort address, final int attempt, final boolean willStayConnected) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+
+        @Override
+        public void reconnectionQueuedFromError(final Throwable cause, final HostAndPort address, final long backOffMillis, final int attempt) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
     }
-  }
 }

@@ -16,13 +16,14 @@
 package com.spotify.folsom.client;
 
 public interface SetRequest {
-  byte[] getValue();
 
-  default OpCode getOpCode() {
-    return OpCode.NOOP;
-  }
+    byte[] getValue();
 
-  default boolean withCas() {
-    return false;
-  }
+    default OpCode getOpCode() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    default boolean withCas() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

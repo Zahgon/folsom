@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.binary;
 
 import com.spotify.folsom.MemcacheAuthenticationException;
@@ -29,43 +28,25 @@ import java.nio.charset.StandardCharsets;
 
 public class NoopRequest extends BinaryRequest<Void> {
 
-  // Keys have to be valid, so pick the key "X" even though we will never actually use it.
-  private static final byte[] DUMMY_KEY = "X".getBytes(StandardCharsets.US_ASCII);
+    // Keys have to be valid, so pick the key "X" even though we will never actually use it.
+    private static final byte[] DUMMY_KEY = "X".getBytes(StandardCharsets.US_ASCII);
 
-  public NoopRequest() {
-    super(DUMMY_KEY);
-  }
-
-  @Override
-  public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
-    dst.put(MAGIC_NUMBER);
-    dst.put(OpCode.NOOP.value());
-    dst.putShort((short) 0); // byte 2-3
-    dst.put((byte) 0); // byte 4
-    dst.put((byte) 0);
-    dst.put((byte) 0);
-    dst.put((byte) 0);
-    dst.putInt(0); // byte 8-11
-    dst.putInt(opaque); // byte 12-15, Opaque
-    dst.putLong((long) 0); // byte 16-23, CAS
-    return toBuffer(alloc, dst);
-  }
-
-  @Override
-  public Request<Void> duplicate() {
-    return new NoopRequest();
-  }
-
-  @Override
-  public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
-    ResponsePacket reply = handleSingleReply(replies);
-
-    if (reply.status == MemcacheStatus.OK) {
-      succeed(null);
-    } else if (reply.status == MemcacheStatus.UNAUTHORIZED) {
-      fail(new MemcacheAuthenticationException("Authentication required"), server);
-    } else {
-      throw new IOException("Unexpected response: " + reply.status);
+    public NoopRequest() {
+        super(DUMMY_KEY);
     }
-  }
+
+    @Override
+    public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Request<Void> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

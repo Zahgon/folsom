@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.ketama;
 
 import com.spotify.folsom.RawMemcacheClient;
@@ -22,27 +21,28 @@ import java.util.function.Function;
 
 public class AddressAndClient {
 
-  private final HostAndPort address;
-  private final RawMemcacheClient client;
+    private final HostAndPort address;
 
-  public AddressAndClient(final HostAndPort address, final RawMemcacheClient client) {
-    this.address = address;
-    this.client = client;
-  }
+    private final RawMemcacheClient client;
 
-  public HostAndPort getAddress() {
-    return address;
-  }
+    public AddressAndClient(final HostAndPort address, final RawMemcacheClient client) {
+        this.address = address;
+        this.client = client;
+    }
 
-  public String getAddressString() {
-    return address.getHostText() + ":" + address.getPort();
-  }
+    public HostAndPort getAddress() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public RawMemcacheClient getClient() {
-    return client;
-  }
+    public String getAddressString() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public AddressAndClient mapClient(final Function<RawMemcacheClient, RawMemcacheClient> function) {
-    return new AddressAndClient(address, function.apply(client));
-  }
+    public RawMemcacheClient getClient() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    public AddressAndClient mapClient(final Function<RawMemcacheClient, RawMemcacheClient> function) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

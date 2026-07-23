@@ -24,52 +24,52 @@ import java.util.stream.Stream;
 
 public class NotConnectedClient extends AbstractRawMemcacheClient {
 
-  public static final NotConnectedClient INSTANCE = new NotConnectedClient();
+    public static final NotConnectedClient INSTANCE = new NotConnectedClient();
 
-  private NotConnectedClient() {}
+    private NotConnectedClient() {
+    }
 
-  @Override
-  public <T> CompletionStage<T> send(final Request<T> request) {
-    return fail();
-  }
+    @Override
+    public <T> CompletionStage<T> send(final Request<T> request) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void shutdown() {
-    notifyConnectionChange();
-  }
+    @Override
+    public void shutdown() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public boolean isConnected() {
-    return false;
-  }
+    @Override
+    public boolean isConnected() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public Throwable getConnectionFailure() {
-    return null;
-  }
+    @Override
+    public Throwable getConnectionFailure() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public int numTotalConnections() {
-    return 1;
-  }
+    @Override
+    public int numTotalConnections() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public int numActiveConnections() {
-    return 0;
-  }
+    @Override
+    public int numActiveConnections() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public int numPendingRequests() {
-    return 0;
-  }
+    @Override
+    public int numPendingRequests() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public Stream<AddressAndClient> streamNodes() {
-    return Stream.empty();
-  }
+    @Override
+    public Stream<AddressAndClient> streamNodes() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  private <T> CompletionStage<T> fail() {
-    return CompletableFutures.exceptionallyCompletedFuture(
-        new MemcacheClosedException("Not connected"));
-  }
+    private <T> CompletionStage<T> fail() {
+        return CompletableFutures.exceptionallyCompletedFuture(new MemcacheClosedException("Not connected"));
+    }
 }

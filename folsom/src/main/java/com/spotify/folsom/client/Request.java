@@ -8,17 +8,18 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.CompletionStage;
 
 public interface Request<V> {
-  byte[] getKey();
 
-  void fail(Throwable e, HostAndPort address);
+    byte[] getKey();
 
-  CompletionStage<V> asFuture();
+    void fail(Throwable e, HostAndPort address);
 
-  ByteBuf writeRequest(ByteBufAllocator alloc, ByteBuffer workingBuffer);
+    CompletionStage<V> asFuture();
 
-  void handle(Object msg, HostAndPort address) throws IOException;
+    ByteBuf writeRequest(ByteBufAllocator alloc, ByteBuffer workingBuffer);
 
-  default Request<V> duplicate() {
-    throw new RuntimeException("duplicate not implemented");
-  }
+    void handle(Object msg, HostAndPort address) throws IOException;
+
+    default Request<V> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

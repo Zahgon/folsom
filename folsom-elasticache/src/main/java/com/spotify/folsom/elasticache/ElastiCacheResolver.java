@@ -13,14 +13,12 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.elasticache;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.stream.Collectors.toList;
-
 import com.spotify.folsom.Resolver;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -48,161 +46,100 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public class ElastiCacheResolver implements Resolver {
 
-  public static class Builder {
-    private final String configHost;
-    private int configPort = 11211;
-    private long ttl = MINUTES.toMillis(1);
-    private int timeout = 5000; // ms
-    private boolean useTls = false;
+    public static class Builder {
 
-    private Builder(final String configHost) {
-      this.configHost = configHost;
+        private final String configHost;
+
+        private int configPort = 11211;
+
+        private long ttl = MINUTES.toMillis(1);
+
+        // ms
+        private int timeout = 5000;
+
+        private boolean useTls = false;
+
+        private Builder(final String configHost) {
+            this.configHost = configHost;
+        }
+
+        public Builder withConfigPort(final int port) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+
+        public Builder withTtlMillis(final long ttl) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+
+        public Builder withResolveTimeoutMillis(final int timeout) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+
+        public Builder withTls(final boolean useTls) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+
+        public ElastiCacheResolver build() {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
     }
 
-    /**
-     * Set the configuration endpoint port. Default: 11211.
-     *
-     * @param port The port
-     * @return The builder
-     */
-    public Builder withConfigPort(final int port) {
-      checkArgument(port > 0, "port must be an integer 1-65535");
-      checkArgument(port < 65536, "port must be an integer 1-65535");
-      this.configPort = port;
-      return this;
+    private static final byte[] CMD = "config get cluster\n".getBytes(US_ASCII);
+
+    public static Builder newBuilder(final String configHost) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    /**
-     * Set the time to live for a resolution result. That is, this controls how frequent the list of
-     * cluster nodes is renewed. Default: 600000 ms (1 min)
-     *
-     * @param ttl Time to live in milliseconds
-     * @return The builder
-     */
-    public Builder withTtlMillis(final long ttl) {
-      checkArgument(ttl > 0, "ttl must be a positive integer");
-      this.ttl = ttl;
-      return this;
+    private final Resolver resolver;
+
+    private final long ttl;
+
+    private final AtomicReference<Response> currentResponse = new AtomicReference<>();
+
+    ElastiCacheResolver(final Resolver resolver, final long ttl) {
+        this.resolver = resolver;
+        this.ttl = ttl;
     }
 
-    /**
-     * Set the socket timeout for a resolution attempt. Default: 5000 ms
-     *
-     * @param timeout The timeout in milliseconds
-     * @return The builder
-     */
-    public Builder withResolveTimeoutMillis(final int timeout) {
-      checkArgument(timeout > 0, "timeout must be a positive integer");
-      this.timeout = timeout;
-      return this;
+    @Override
+    public List<ResolveResult> resolve() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    /**
-     * Configure TLS usage for connection. Default: false
-     *
-     * @param useTls whether resolver should use TLS connection
-     * @return The builder
-     */
-    public Builder withTls(final boolean useTls) {
-      this.useTls = useTls;
-      return this;
+    public interface Resolver {
+
+        Response resolve();
     }
 
-    /**
-     * Build the resolver
-     *
-     * @return The resolver
-     */
-    public ElastiCacheResolver build() {
-      final Resolver resolver = new SocketResolver(configHost, configPort, timeout, useTls);
+    public static class SocketResolver implements Resolver {
 
-      return new ElastiCacheResolver(resolver, ttl);
+        private final String configHost;
+
+        private final int configPort;
+
+        private final int timeout;
+
+        private final boolean useTls;
+
+        private final ResponseParser parser = new ResponseParser();
+
+        public SocketResolver(final String configHost, final int configPort, final int timeout, final boolean useTls) {
+            this.configHost = configHost;
+            this.configPort = configPort;
+            this.timeout = timeout;
+            this.useTls = useTls;
+        }
+
+        public Response resolve() {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+
+        private Socket createSocket() throws IOException {
+            if (useTls) {
+                return SSLSocketFactory.getDefault().createSocket();
+            } else {
+                return new Socket();
+            }
+        }
     }
-  }
-
-  private static final byte[] CMD = "config get cluster\n".getBytes(US_ASCII);
-
-  /**
-   * Build a new resolver.
-   *
-   * @param configHost The configuration endpoint hostname, e.g
-   *     foo.o18xjv.cfg.euw1.cache.amazonaws.com
-   * @return The builder
-   */
-  public static Builder newBuilder(final String configHost) {
-    return new Builder(configHost);
-  }
-
-  private final Resolver resolver;
-  private final long ttl;
-  private final AtomicReference<Response> currentResponse = new AtomicReference<>();
-
-  ElastiCacheResolver(final Resolver resolver, final long ttl) {
-    this.resolver = resolver;
-    this.ttl = ttl;
-  }
-
-  @Override
-  public List<ResolveResult> resolve() {
-    final Response response = resolver.resolve();
-
-    final Response effective =
-        currentResponse.accumulateAndGet(
-            response,
-            (current, r) -> {
-              if (current == null
-                  || r.getConfigurationVersion() > current.getConfigurationVersion()) {
-                return r;
-              } else {
-                return current;
-              }
-            });
-
-    return effective
-        .getHosts()
-        .stream()
-        .map(hap -> new ResolveResult(hap.getHostText(), hap.getPort(), ttl))
-        .collect(toList());
-  }
-
-  public interface Resolver {
-    Response resolve();
-  }
-
-  public static class SocketResolver implements Resolver {
-    private final String configHost;
-    private final int configPort;
-    private final int timeout;
-    private final boolean useTls;
-    private final ResponseParser parser = new ResponseParser();
-
-    public SocketResolver(
-        final String configHost, final int configPort, final int timeout, final boolean useTls) {
-      this.configHost = configHost;
-      this.configPort = configPort;
-      this.timeout = timeout;
-      this.useTls = useTls;
-    }
-
-    public Response resolve() {
-      try (final Socket socket = createSocket()) {
-        socket.setSoTimeout(timeout);
-        socket.connect(new InetSocketAddress(configHost, configPort), timeout);
-
-        socket.getOutputStream().write(CMD);
-
-        return parser.parse(socket.getInputStream());
-      } catch (IOException e) {
-        throw new RuntimeException("ElastiCache auto-discovery failed", e);
-      }
-    }
-
-    private Socket createSocket() throws IOException {
-      if (useTls) {
-        return SSLSocketFactory.getDefault().createSocket();
-      } else {
-        return new Socket();
-      }
-    }
-  }
 }

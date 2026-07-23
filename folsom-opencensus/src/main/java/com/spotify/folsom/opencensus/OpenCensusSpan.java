@@ -13,54 +13,45 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.opencensus;
 
 import static io.opencensus.trace.AttributeValue.longAttributeValue;
 import static io.opencensus.trace.AttributeValue.stringAttributeValue;
 import static java.util.Objects.requireNonNull;
-
 import com.google.common.io.BaseEncoding;
 import com.spotify.folsom.Span;
 import io.opencensus.trace.Status;
 
 class OpenCensusSpan implements Span {
 
-  private static final BaseEncoding HEX = BaseEncoding.base16().lowerCase();
+    private static final BaseEncoding HEX = BaseEncoding.base16().lowerCase();
 
-  private final io.opencensus.trace.Span span;
-  private final boolean includeValues;
+    private final io.opencensus.trace.Span span;
 
-  OpenCensusSpan(final io.opencensus.trace.Span span, final boolean includeValues) {
-    this.span = requireNonNull(span);
-    this.includeValues = includeValues;
-  }
+    private final boolean includeValues;
 
-  @Override
-  public Span value(final byte[] value) {
-    if (value != null) {
-      if (includeValues) {
-        span.putAttribute("value_hex", stringAttributeValue(HEX.encode(value)));
-      }
-      span.putAttribute("value_size_bytes", longAttributeValue(value.length));
+    OpenCensusSpan(final io.opencensus.trace.Span span, final boolean includeValues) {
+        this.span = requireNonNull(span);
+        this.includeValues = includeValues;
     }
-    return this;
-  }
 
-  @Override
-  public Span success() {
-    span.setStatus(Status.OK);
-    return this;
-  }
+    @Override
+    public Span value(final byte[] value) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public Span failure() {
-    span.setStatus(Status.UNKNOWN);
-    return this;
-  }
+    @Override
+    public Span success() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void close() {
-    span.end();
-  }
+    @Override
+    public Span failure() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void close() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

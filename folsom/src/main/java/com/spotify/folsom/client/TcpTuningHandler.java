@@ -13,7 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-/** Copyright (C) 2012-2014 Spotify AB */
+/**
+ * Copyright (C) 2012-2014 Spotify AB
+ */
 package com.spotify.folsom.client;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -26,19 +28,8 @@ import io.netty.channel.socket.SocketChannelConfig;
  */
 public class TcpTuningHandler extends ChannelInboundHandlerAdapter {
 
-  @Override
-  public void channelActive(final ChannelHandlerContext ctx) throws Exception {
-    final SocketChannelConfig config = (SocketChannelConfig) ctx.channel().config();
-
-    // Disable Nagle's algorithm
-    config.setTcpNoDelay(true);
-
-    // Setup TCP keepalive
-    config.setKeepAlive(true);
-
-    super.channelActive(ctx);
-
-    // Our work is done
-    ctx.channel().pipeline().remove(this);
-  }
+    @Override
+    public void channelActive(final ChannelHandlerContext ctx) throws Exception {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

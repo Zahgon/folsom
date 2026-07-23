@@ -29,53 +29,35 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-public class StatsRequest extends AsciiRequest<Map<String, MemcachedStats>>
-    implements AllRequest<Map<String, MemcachedStats>> {
+public class StatsRequest extends AsciiRequest<Map<String, MemcachedStats>> implements AllRequest<Map<String, MemcachedStats>> {
 
-  private static final byte[] CMD = "stats ".getBytes();
+    private static final byte[] CMD = "stats ".getBytes();
 
-  public StatsRequest(final String key) {
-    this(key.getBytes(StandardCharsets.US_ASCII));
-  }
-
-  private StatsRequest(final byte[] key) {
-    super(key);
-  }
-
-  @Override
-  public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
-    dst.put(CMD);
-    dst.put(key);
-    dst.put(NEWLINE_BYTES);
-    return toBuffer(alloc, dst);
-  }
-
-  @Override
-  protected void handle(final AsciiResponse response, final HostAndPort server) throws IOException {
-    final AsciiResponse.Type type = response.type;
-    final String host = server.getHostText() + ":" + server.getPort();
-    if (type == AsciiResponse.Type.STATS) {
-      final StatsAsciiResponse statsResponse = (StatsAsciiResponse) response;
-      succeed(ImmutableMap.of(host, new MemcachedStats(statsResponse.values)));
-    } else if (type == AsciiResponse.Type.ERROR) {
-      succeed(ImmutableMap.of(host, new MemcachedStats(ImmutableMap.of())));
-    } else if (type == AsciiResponse.Type.CLIENT_ERROR) {
-      MemcacheAuthenticationException exception =
-          new MemcacheAuthenticationException(
-              "Authentication required by server. Client not authenticated.");
-      fail(exception, server);
-    } else {
-      throw new IOException("Unexpected response type: " + type);
+    public StatsRequest(final String key) {
+        this(key.getBytes(StandardCharsets.US_ASCII));
     }
-  }
 
-  @Override
-  public Map<String, MemcachedStats> merge(final List<Map<String, MemcachedStats>> results) {
-    return AllRequest.mergeStats(results);
-  }
+    private StatsRequest(final byte[] key) {
+        super(key);
+    }
 
-  @Override
-  public Request<Map<String, MemcachedStats>> duplicate() {
-    return new StatsRequest(key);
-  }
+    @Override
+    public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    protected void handle(final AsciiResponse response, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Map<String, MemcachedStats> merge(final List<Map<String, MemcachedStats>> results) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Request<Map<String, MemcachedStats>> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

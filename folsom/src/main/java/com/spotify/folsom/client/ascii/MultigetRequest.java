@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.ascii;
 
 import com.spotify.folsom.GetResult;
@@ -31,108 +30,60 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class MultigetRequest extends AsciiRequest<List<GetResult<byte[]>>>
-    implements MultiRequest<GetResult<byte[]>> {
+public class MultigetRequest extends AsciiRequest<List<GetResult<byte[]>>> implements MultiRequest<GetResult<byte[]>> {
 
-  private static final byte[] GET = "get ".getBytes(StandardCharsets.US_ASCII);
-  private static final byte[] CAS_GET = "gets ".getBytes(StandardCharsets.US_ASCII);
+    private static final byte[] GET = "get ".getBytes(StandardCharsets.US_ASCII);
 
-  private final List<byte[]> keys;
-  private final byte[] cmd;
+    private static final byte[] CAS_GET = "gets ".getBytes(StandardCharsets.US_ASCII);
 
-  private MultigetRequest(final List<byte[]> keys, byte[] cmd) {
-    super(keys.get(0));
-    this.cmd = cmd;
-    this.keys = keys;
-  }
+    private final List<byte[]> keys;
 
-  public static MultigetRequest create(final List<byte[]> keys, boolean withCas) {
-    byte[] cmd = withCas ? CAS_GET : GET;
-    final int size = keys.size();
-    if (size > MemcacheEncoder.MAX_MULTIGET_SIZE) {
-      throw new IllegalArgumentException("Too large multiget request");
-    }
-    return new MultigetRequest(keys, cmd);
-  }
+    private final byte[] cmd;
 
-  @Override
-  public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
-    dst.put(cmd);
-    for (final byte[] key : keys) {
-      dst.put(SPACE_BYTES);
-      dst.put(key);
-    }
-    dst.put(NEWLINE_BYTES);
-
-    return toBuffer(alloc, dst);
-  }
-
-  @Override
-  public Request<List<GetResult<byte[]>>> duplicate() {
-    return new MultigetRequest(keys, cmd);
-  }
-
-  @Override
-  public void handle(AsciiResponse response, final HostAndPort server) throws IOException {
-    final int size = keys.size();
-    final List<GetResult<byte[]>> result = new ArrayList<>(size);
-    for (int i = 0; i < size; i++) {
-      result.add(null);
+    private MultigetRequest(final List<byte[]> keys, byte[] cmd) {
+        super(keys.get(0));
+        this.cmd = cmd;
+        this.keys = keys;
     }
 
-    if (response.type == AsciiResponse.Type.EMPTY_LIST) {
-      succeed(result);
-      return;
+    public static MultigetRequest create(final List<byte[]> keys, boolean withCas) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    if (response.type == AsciiResponse.Type.CLIENT_ERROR) {
-      MemcacheAuthenticationException exception =
-          new MemcacheAuthenticationException(
-              "Authentication required by server. Client not authenticated.");
-      fail(exception, server);
-      return;
+    @Override
+    public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    if (!(response instanceof ValueAsciiResponse)) {
-      throw new IOException("Unexpected response type: " + response.type);
+    @Override
+    public Request<List<GetResult<byte[]>>> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    List<ValueResponse> values = ((ValueAsciiResponse) response).values;
-
-    if (values.size() > size) {
-      throw new IOException("Too many responses, expected " + size + " but got " + values.size());
+    @Override
+    public void handle(AsciiResponse response, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    int index = -1;
-    for (final ValueResponse value : values) {
-      index = findKey(index + 1, value.key);
-      if (index < 0) {
-        throw new IOException("Got key in value that was not present in request");
-      }
-      result.set(index, GetResult.success(value.value, value.cas, value.flags));
+    private int findKey(int index, final byte[] key) {
+        final int size = keys.size();
+        while (index < size) {
+            final byte[] candidate = keys.get(index);
+            if (Arrays.equals(key, candidate)) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
     }
-    succeed(result);
-  }
 
-  private int findKey(int index, final byte[] key) {
-    final int size = keys.size();
-    while (index < size) {
-      final byte[] candidate = keys.get(index);
-      if (Arrays.equals(key, candidate)) {
-        return index;
-      }
-      index++;
+    @Override
+    public List<byte[]> getKeys() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-    return -1;
-  }
 
-  @Override
-  public List<byte[]> getKeys() {
-    return keys;
-  }
-
-  @Override
-  public Request<List<GetResult<byte[]>>> create(List<byte[]> keys) {
-    return new MultigetRequest(keys, cmd);
-  }
+    @Override
+    public Request<List<GetResult<byte[]>>> create(List<byte[]> keys) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.authenticate;
 
 import com.spotify.folsom.RawMemcacheClient;
@@ -22,18 +21,21 @@ import java.util.concurrent.CompletionStage;
 
 public class NoAuthenticationValidation implements Authenticator {
 
-  private static final NoAuthenticationValidation INSTANCE = new NoAuthenticationValidation();
+    private static final NoAuthenticationValidation INSTANCE = new NoAuthenticationValidation();
 
-  public static NoAuthenticationValidation getInstance() {
-    return INSTANCE;
-  }
+    public static NoAuthenticationValidation getInstance() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  private NoAuthenticationValidation() {}
+    private NoAuthenticationValidation() {
+    }
 
-  public CompletionStage<RawMemcacheClient> authenticate(RawMemcacheClient client) {
-    return CompletableFuture.completedFuture(client);
-  }
+    public CompletionStage<RawMemcacheClient> authenticate(RawMemcacheClient client) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void validate(final boolean binary) {}
+    @Override
+    public void validate(final boolean binary) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

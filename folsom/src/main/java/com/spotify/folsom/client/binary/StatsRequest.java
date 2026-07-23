@@ -30,54 +30,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StatsRequest extends BinaryRequest<Map<String, MemcachedStats>>
-    implements AllRequest<Map<String, MemcachedStats>> {
+public class StatsRequest extends BinaryRequest<Map<String, MemcachedStats>> implements AllRequest<Map<String, MemcachedStats>> {
 
-  public StatsRequest(String key) {
-    super(key.getBytes(StandardCharsets.US_ASCII));
-  }
-
-  private StatsRequest(final byte[] key) {
-    super(key);
-  }
-
-  @Override
-  public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
-    writeHeader(dst, OpCode.STAT, 0, 0, 0);
-    dst.put(key);
-
-    return toBuffer(alloc, dst);
-  }
-
-  @Override
-  public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
-    final Map<String, String> stats = new HashMap<>();
-    final int expectedOpaque = opaque;
-    for (final ResponsePacket reply : replies) {
-      if (OpCode.getKind(reply.opcode) != OpCode.STAT) {
-        throw new IOException("Unmatched response");
-      }
-      final int opaque = reply.opaque;
-      if (opaque != expectedOpaque) {
-        throw new IOException("messages out of order for " + getClass().getSimpleName());
-      }
-      for (ResponsePacket responsePacket : replies) {
-        final String name = new String(responsePacket.key, StandardCharsets.US_ASCII);
-        final String value = new String(responsePacket.value, StandardCharsets.US_ASCII);
-        stats.put(name, value);
-      }
+    public StatsRequest(String key) {
+        super(key.getBytes(StandardCharsets.US_ASCII));
     }
-    succeed(
-        ImmutableMap.of(server.getHostText() + ":" + server.getPort(), new MemcachedStats(stats)));
-  }
 
-  @Override
-  public Map<String, MemcachedStats> merge(List<Map<String, MemcachedStats>> results) {
-    return AllRequest.mergeStats(results);
-  }
+    private StatsRequest(final byte[] key) {
+        super(key);
+    }
 
-  @Override
-  public Request<Map<String, MemcachedStats>> duplicate() {
-    return new StatsRequest(key);
-  }
+    @Override
+    public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Map<String, MemcachedStats> merge(List<Map<String, MemcachedStats>> results) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Request<Map<String, MemcachedStats>> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

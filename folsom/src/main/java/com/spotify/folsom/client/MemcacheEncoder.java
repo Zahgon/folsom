@@ -23,22 +23,21 @@ import java.util.List;
 
 public class MemcacheEncoder extends MessageToMessageEncoder<Request<?>> {
 
-  public static final int MAX_KEY_LEN = 250;
-  public static final int MAX_MULTIGET_SIZE = 255;
-  public static final int MAX_ASCII_REQUEST = 100 + MAX_MULTIGET_SIZE * (MAX_KEY_LEN + 1);
+    public static final int MAX_KEY_LEN = 250;
 
-  public static final int MAX_BINARY_REQUEST = MAX_MULTIGET_SIZE * (MAX_KEY_LEN + 32);
-  public static final int MAX_REQUEST = Math.max(MAX_ASCII_REQUEST, MAX_BINARY_REQUEST);
+    public static final int MAX_MULTIGET_SIZE = 255;
 
-  // Big enough to encode the largest possible request
-  private final ByteBuffer workingBuffer = ByteBuffer.allocate(MAX_REQUEST);
+    public static final int MAX_ASCII_REQUEST = 100 + MAX_MULTIGET_SIZE * (MAX_KEY_LEN + 1);
 
-  @Override
-  public void encode(
-      final ChannelHandlerContext ctx, final Request<?> request, final List<Object> out)
-      throws Exception {
-    workingBuffer.clear();
-    final ByteBuf message = request.writeRequest(ctx.alloc(), workingBuffer);
-    out.add(message);
-  }
+    public static final int MAX_BINARY_REQUEST = MAX_MULTIGET_SIZE * (MAX_KEY_LEN + 32);
+
+    public static final int MAX_REQUEST = Math.max(MAX_ASCII_REQUEST, MAX_BINARY_REQUEST);
+
+    // Big enough to encode the largest possible request
+    private final ByteBuffer workingBuffer = ByteBuffer.allocate(MAX_REQUEST);
+
+    @Override
+    public void encode(final ChannelHandlerContext ctx, final Request<?> request, final List<Object> out) throws Exception {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

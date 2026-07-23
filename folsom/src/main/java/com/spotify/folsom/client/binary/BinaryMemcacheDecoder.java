@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.binary;
 
 import com.spotify.folsom.MemcacheStatus;
@@ -26,92 +25,22 @@ import java.util.List;
 
 public class BinaryMemcacheDecoder extends ByteToMessageDecoder {
 
-  private static final byte[] NO_BYTES = new byte[0];
-  private static final int BATCH_SIZE = 16;
+    private static final byte[] NO_BYTES = new byte[0];
 
-  private BinaryResponse replies = new BinaryResponse();
+    private static final int BATCH_SIZE = 16;
 
-  public BinaryMemcacheDecoder() {}
+    private BinaryResponse replies = new BinaryResponse();
 
-  @Override
-  protected void decode(final ChannelHandlerContext ctx, final ByteBuf buf, final List<Object> out)
-      throws Exception {
-    for (int i = 0; i < BATCH_SIZE; i++) {
-      if (buf.readableBytes() < 24) {
-        return;
-      }
-
-      buf.markReaderIndex();
-
-      final int magicNumber = buf.readUnsignedByte(); // byte 0
-      if (magicNumber != 0x81) {
-        throw fail(buf, String.format("Invalid magic number: 0x%2x", magicNumber));
-      }
-
-      final OpCode opcode = OpCode.of(buf.readByte()); // byte 1
-      final int keyLength = buf.readUnsignedShort(); // byte 2-3
-      final int extrasLength = buf.readUnsignedByte(); // byte 4
-      buf.skipBytes(1);
-      final int statusCode = buf.readUnsignedShort(); // byte 6-7
-
-      final MemcacheStatus status = MemcacheStatus.fromInt(statusCode);
-
-      final int totalLength = buf.readInt(); // byte 8-11
-      final int opaque = buf.readInt();
-
-      final long cas = buf.readLong();
-
-      if (buf.readableBytes() < totalLength) {
-        buf.resetReaderIndex();
-        return;
-      }
-
-      int flags = 0;
-      if (extrasLength >= 4) {
-        flags = buf.readInt();
-        final int extrasBytesLeft = extrasLength - 4; // 4 bytes for the flags
-        buf.skipBytes(extrasBytesLeft);
-      }
-
-      byte[] keyBytes;
-      if (keyLength == 0) {
-        keyBytes = NO_BYTES;
-      } else {
-        keyBytes = new byte[keyLength];
-      }
-      buf.readBytes(keyBytes);
-
-      final int valueLength = totalLength - keyLength - extrasLength;
-      byte[] valueBytes;
-      if (valueLength == 0) {
-        valueBytes = NO_BYTES;
-      } else {
-        valueBytes = new byte[valueLength];
-      }
-
-      buf.readBytes(valueBytes);
-
-      if (opcode == OpCode.STAT) {
-        boolean endPacket = keyLength == 0;
-        if (endPacket) {
-          out.add(replies);
-          replies = new BinaryResponse();
-        } else {
-          // Skip end packet
-          replies.add(new ResponsePacket(opcode, status, opaque, cas, flags, keyBytes, valueBytes));
-        }
-      } else {
-        replies.add(new ResponsePacket(opcode, status, opaque, cas, flags, keyBytes, valueBytes));
-        if ((opaque & 0xFF) == 0) {
-          out.add(replies);
-          replies = new BinaryResponse();
-        }
-      }
+    public BinaryMemcacheDecoder() {
     }
-  }
 
-  private IOException fail(final ByteBuf buf, final String message) {
-    buf.resetReaderIndex();
-    return new IOException(message);
-  }
+    @Override
+    protected void decode(final ChannelHandlerContext ctx, final ByteBuf buf, final List<Object> out) throws Exception {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    private IOException fail(final ByteBuf buf, final String message) {
+        buf.resetReaderIndex();
+        return new IOException(message);
+    }
 }

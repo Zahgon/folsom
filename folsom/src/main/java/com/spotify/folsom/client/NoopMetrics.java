@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client;
 
 import com.spotify.folsom.GetResult;
@@ -23,29 +22,46 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 public class NoopMetrics implements Metrics {
-  public static final NoopMetrics INSTANCE = new NoopMetrics();
 
-  @Override
-  public void measureGetFuture(CompletionStage<GetResult<byte[]>> future) {}
+    public static final NoopMetrics INSTANCE = new NoopMetrics();
 
-  @Override
-  public void measureMultigetFuture(CompletionStage<List<GetResult<byte[]>>> future) {}
+    @Override
+    public void measureGetFuture(CompletionStage<GetResult<byte[]>> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureDeleteFuture(CompletionStage<MemcacheStatus> future) {}
+    @Override
+    public void measureMultigetFuture(CompletionStage<List<GetResult<byte[]>>> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureSetFuture(CompletionStage<MemcacheStatus> future) {}
+    @Override
+    public void measureDeleteFuture(CompletionStage<MemcacheStatus> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureIncrDecrFuture(CompletionStage<Long> future) {}
+    @Override
+    public void measureSetFuture(CompletionStage<MemcacheStatus> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureTouchFuture(CompletionStage<MemcacheStatus> future) {}
+    @Override
+    public void measureIncrDecrFuture(CompletionStage<Long> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void registerOutstandingRequestsGauge(OutstandingRequestsGauge gauge) {}
+    @Override
+    public void measureTouchFuture(CompletionStage<MemcacheStatus> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void unregisterOutstandingRequestsGauge(OutstandingRequestsGauge gauge) {}
+    @Override
+    public void registerOutstandingRequestsGauge(OutstandingRequestsGauge gauge) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void unregisterOutstandingRequestsGauge(OutstandingRequestsGauge gauge) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

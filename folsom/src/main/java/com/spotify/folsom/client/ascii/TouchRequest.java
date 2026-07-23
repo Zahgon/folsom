@@ -26,44 +26,28 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class TouchRequest extends AsciiRequest<MemcacheStatus> {
-  private static final byte[] CMD = "touch ".getBytes();
-  private final int ttl;
 
-  public TouchRequest(byte[] key, int ttl) {
-    super(key);
-    this.ttl = ttl;
-  }
+    private static final byte[] CMD = "touch ".getBytes();
 
-  @Override
-  public ByteBuf writeRequest(ByteBufAllocator alloc, ByteBuffer dst) {
-    // <command name> <key> <value> [noreply]\r\n
-    dst.put(CMD);
-    dst.put(key);
-    dst.put(SPACE_BYTES);
-    dst.put(String.valueOf(Utils.ttlToExpiration(ttl)).getBytes());
-    dst.put(NEWLINE_BYTES);
-    return toBuffer(alloc, dst);
-  }
+    private final int ttl;
 
-  @Override
-  public Request<MemcacheStatus> duplicate() {
-    return new TouchRequest(key, ttl);
-  }
-
-  @Override
-  protected void handle(final AsciiResponse response, final HostAndPort server) throws IOException {
-    AsciiResponse.Type type = response.type;
-    if (type == AsciiResponse.Type.TOUCHED) {
-      succeed(MemcacheStatus.OK);
-    } else if (type == AsciiResponse.Type.NOT_FOUND) {
-      succeed(MemcacheStatus.KEY_NOT_FOUND);
-    } else if (type == AsciiResponse.Type.CLIENT_ERROR) {
-      MemcacheAuthenticationException exception =
-          new MemcacheAuthenticationException(
-              "Authentication required by server. Client not authenticated.");
-      fail(exception, server);
-    } else {
-      throw new IOException("Unexpected line: " + type);
+    public TouchRequest(byte[] key, int ttl) {
+        super(key);
+        this.ttl = ttl;
     }
-  }
+
+    @Override
+    public ByteBuf writeRequest(ByteBufAllocator alloc, ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Request<MemcacheStatus> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    protected void handle(final AsciiResponse response, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

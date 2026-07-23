@@ -13,11 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.ketama;
 
 import static java.util.Objects.requireNonNull;
-
 import com.google.common.hash.HashCode;
 import com.spotify.folsom.RawMemcacheClient;
 import java.util.Collection;
@@ -26,71 +24,48 @@ import java.util.TreeMap;
 
 public class Continuum implements NodeLocator {
 
-  private static final int VNODE_RATIO = 100;
+    private static final int VNODE_RATIO = 100;
 
-  private final TreeMap<Integer, RawMemcacheClient> ringOfFire;
+    private final TreeMap<Integer, RawMemcacheClient> ringOfFire;
 
-  public Continuum(final Collection<AddressAndClient> clients) {
-    this(clients, VNODE_RATIO);
-  }
-
-  public Continuum(final Collection<AddressAndClient> clients, int vnodeRatio) {
-    this.ringOfFire = buildRing(clients, vnodeRatio);
-  }
-
-  private TreeMap<Integer, RawMemcacheClient> buildRing(
-      final Collection<AddressAndClient> clients, int vnodeRatio) {
-
-    final TreeMap<Integer, RawMemcacheClient> r = new TreeMap<>();
-    for (final AddressAndClient client : clients) {
-      final String address = client.getAddress().toString();
-
-      byte[] hash = addressToBytes(address);
-      for (int i = 0; i < vnodeRatio; i++) {
-        final HashCode hashCode = Hasher.hash(hash);
-        hash = hashCode.asBytes();
-        r.put(hashCode.asInt(), client.getClient());
-      }
-    }
-    return r;
-  }
-
-  @Override
-  public RawMemcacheClient findClient(final byte[] key) {
-    final int keyHash = Hasher.hash(key).asInt();
-
-    Entry<Integer, RawMemcacheClient> entry = ringOfFire.ceilingEntry(keyHash);
-    if (entry == null) {
-      // wrap around
-      entry = ringOfFire.firstEntry();
+    public Continuum(final Collection<AddressAndClient> clients) {
+        this(clients, VNODE_RATIO);
     }
 
-    for (int i = 0; i < ringOfFire.size(); i++) {
-      // TODO: maybe loop for fewer rounds - what happens if all clients are disconnected?
-      final RawMemcacheClient client = findClient(entry);
-      if (client.isConnected()) {
-        return client;
-      }
-      entry = ringOfFire.higherEntry(entry.getKey());
-      if (entry == null) {
-        // wrap around
-        entry = ringOfFire.firstEntry();
-      }
+    public Continuum(final Collection<AddressAndClient> clients, int vnodeRatio) {
+        this.ringOfFire = buildRing(clients, vnodeRatio);
     }
-    return ringOfFire.firstEntry().getValue();
-  }
 
-  private RawMemcacheClient findClient(final Entry<Integer, RawMemcacheClient> entry) {
-    requireNonNull(entry);
-    return entry.getValue();
-  }
-
-  private static byte[] addressToBytes(final String s) {
-    final int length = s.length();
-    final byte[] bytes = new byte[length];
-    for (int i = 0; i < length; i++) {
-      bytes[i] = (byte) s.charAt(i);
+    private TreeMap<Integer, RawMemcacheClient> buildRing(final Collection<AddressAndClient> clients, int vnodeRatio) {
+        final TreeMap<Integer, RawMemcacheClient> r = new TreeMap<>();
+        for (final AddressAndClient client : clients) {
+            final String address = client.getAddress().toString();
+            byte[] hash = addressToBytes(address);
+            for (int i = 0; i < vnodeRatio; i++) {
+                final HashCode hashCode = Hasher.hash(hash);
+                hash = hashCode.asBytes();
+                r.put(hashCode.asInt(), client.getClient());
+            }
+        }
+        return r;
     }
-    return bytes;
-  }
+
+    @Override
+    public RawMemcacheClient findClient(final byte[] key) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    private RawMemcacheClient findClient(final Entry<Integer, RawMemcacheClient> entry) {
+        requireNonNull(entry);
+        return entry.getValue();
+    }
+
+    private static byte[] addressToBytes(final String s) {
+        final int length = s.length();
+        final byte[] bytes = new byte[length];
+        for (int i = 0; i < length; i++) {
+            bytes[i] = (byte) s.charAt(i);
+        }
+        return bytes;
+    }
 }

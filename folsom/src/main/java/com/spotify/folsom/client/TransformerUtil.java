@@ -23,86 +23,85 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class TransformerUtil<T> {
-  private final Function<GetResult<T>, T> getResultToValue;
-  private final ListResultUnwrapper<T> listResultUnwrapper;
-  private final ResultDecoder<T> resultDecoder;
-  private final ListResultDecoder<T> listResultDecoder;
 
-  public TransformerUtil(Transcoder<T> transcoder) {
-    this.getResultToValue = new ResultUnwrapper<>();
-    this.listResultUnwrapper = new ListResultUnwrapper<>(getResultToValue);
-    this.resultDecoder = new ResultDecoder<>(transcoder);
-    this.listResultDecoder = new ListResultDecoder<>(resultDecoder);
-  }
+    private final Function<GetResult<T>, T> getResultToValue;
 
-  public CompletionStage<T> unwrap(CompletionStage<GetResult<T>> future) {
-    return future.thenApply(getResultToValue);
-  }
+    private final ListResultUnwrapper<T> listResultUnwrapper;
 
-  public CompletionStage<GetResult<T>> decode(CompletionStage<GetResult<byte[]>> future) {
-    return future.thenApply(resultDecoder);
-  }
-
-  public CompletionStage<List<T>> unwrapList(CompletionStage<List<GetResult<T>>> future) {
-    return future.thenApply(listResultUnwrapper);
-  }
-
-  public CompletionStage<List<GetResult<T>>> decodeList(
-      CompletionStage<List<GetResult<byte[]>>> future) {
-    return future.thenApply(listResultDecoder);
-  }
-
-  private static class ResultUnwrapper<T> implements Function<GetResult<T>, T> {
-    @Override
-    public T apply(GetResult<T> input) {
-      if (input == null) {
-        return null;
-      }
-      return input.getValue();
-    }
-  }
-
-  private static class ListResultUnwrapper<T> implements Function<List<GetResult<T>>, List<T>> {
-    private final Function<GetResult<T>, T> resultUnwrapper;
-
-    public ListResultUnwrapper(Function<GetResult<T>, T> resultUnwrapper) {
-      this.resultUnwrapper = resultUnwrapper;
-    }
-
-    @Override
-    public List<T> apply(List<GetResult<T>> input) {
-      return input.stream().map(resultUnwrapper).collect(Collectors.toList());
-    }
-  }
-
-  private static class ResultDecoder<T> implements Function<GetResult<byte[]>, GetResult<T>> {
-    private final Transcoder<T> transcoder;
-
-    public ResultDecoder(Transcoder<T> transcoder) {
-      this.transcoder = transcoder;
-    }
-
-    @Override
-    public GetResult<T> apply(GetResult<byte[]> input) {
-      if (input == null) {
-        return null;
-      }
-      return GetResult.success(
-          transcoder.decode(input.getValue()), input.getCas(), input.getFlags());
-    }
-  }
-
-  private static class ListResultDecoder<T>
-      implements Function<List<GetResult<byte[]>>, List<GetResult<T>>> {
     private final ResultDecoder<T> resultDecoder;
 
-    public ListResultDecoder(ResultDecoder<T> resultDecoder) {
-      this.resultDecoder = resultDecoder;
+    private final ListResultDecoder<T> listResultDecoder;
+
+    public TransformerUtil(Transcoder<T> transcoder) {
+        this.getResultToValue = new ResultUnwrapper<>();
+        this.listResultUnwrapper = new ListResultUnwrapper<>(getResultToValue);
+        this.resultDecoder = new ResultDecoder<>(transcoder);
+        this.listResultDecoder = new ListResultDecoder<>(resultDecoder);
     }
 
-    @Override
-    public List<GetResult<T>> apply(List<GetResult<byte[]>> input) {
-      return input.stream().map(resultDecoder).collect(Collectors.toList());
+    public CompletionStage<T> unwrap(CompletionStage<GetResult<T>> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-  }
+
+    public CompletionStage<GetResult<T>> decode(CompletionStage<GetResult<byte[]>> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    public CompletionStage<List<T>> unwrapList(CompletionStage<List<GetResult<T>>> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    public CompletionStage<List<GetResult<T>>> decodeList(CompletionStage<List<GetResult<byte[]>>> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    private static class ResultUnwrapper<T> implements Function<GetResult<T>, T> {
+
+        @Override
+        public T apply(GetResult<T> input) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+    }
+
+    private static class ListResultUnwrapper<T> implements Function<List<GetResult<T>>, List<T>> {
+
+        private final Function<GetResult<T>, T> resultUnwrapper;
+
+        public ListResultUnwrapper(Function<GetResult<T>, T> resultUnwrapper) {
+            this.resultUnwrapper = resultUnwrapper;
+        }
+
+        @Override
+        public List<T> apply(List<GetResult<T>> input) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+    }
+
+    private static class ResultDecoder<T> implements Function<GetResult<byte[]>, GetResult<T>> {
+
+        private final Transcoder<T> transcoder;
+
+        public ResultDecoder(Transcoder<T> transcoder) {
+            this.transcoder = transcoder;
+        }
+
+        @Override
+        public GetResult<T> apply(GetResult<byte[]> input) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+    }
+
+    private static class ListResultDecoder<T> implements Function<List<GetResult<byte[]>>, List<GetResult<T>>> {
+
+        private final ResultDecoder<T> resultDecoder;
+
+        public ListResultDecoder(ResultDecoder<T> resultDecoder) {
+            this.resultDecoder = resultDecoder;
+        }
+
+        @Override
+        public List<GetResult<T>> apply(List<GetResult<byte[]>> input) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+    }
 }

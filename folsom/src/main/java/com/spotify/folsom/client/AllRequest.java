@@ -24,23 +24,17 @@ import java.util.concurrent.CompletionStage;
 
 public interface AllRequest<T> extends Request<T> {
 
-  default CompletionStage<T> preMerge(CompletionStage<T> stage) {
-    return stage;
-  }
+    default CompletionStage<T> preMerge(CompletionStage<T> stage) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  T merge(List<T> results);
+    T merge(List<T> results);
 
-  static MemcacheStatus mergeMemcacheStatus(final List<MemcacheStatus> results) {
-    return results
-        .stream()
-        .filter(status -> status != MemcacheStatus.OK)
-        .findFirst()
-        .orElse(MemcacheStatus.OK);
-  }
+    static MemcacheStatus mergeMemcacheStatus(final List<MemcacheStatus> results) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  static Map<String, MemcachedStats> mergeStats(final List<Map<String, MemcachedStats>> results) {
-    final ImmutableMap.Builder<String, MemcachedStats> builder = ImmutableMap.builder();
-    results.forEach(builder::putAll);
-    return builder.build();
-  }
+    static Map<String, MemcachedStats> mergeStats(final List<Map<String, MemcachedStats>> results) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

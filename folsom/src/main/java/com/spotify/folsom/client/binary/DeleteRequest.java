@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.binary;
 
 import com.spotify.folsom.MemcacheStatus;
@@ -27,34 +26,29 @@ import java.nio.ByteBuffer;
 
 public class DeleteRequest extends BinaryRequest<MemcacheStatus> {
 
-  private final long cas;
+    private final long cas;
 
-  public DeleteRequest(final byte[] key, final long cas) {
-    super(key);
+    public DeleteRequest(final byte[] key, final long cas) {
+        super(key);
+        this.cas = cas;
+    }
 
-    this.cas = cas;
-  }
+    @Override
+    public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
-    writeHeader(dst, OpCode.DELETE, (byte) 0, 0, cas);
-    dst.put(key);
-    return toBuffer(alloc, dst);
-  }
+    @Override
+    public Request<MemcacheStatus> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public Request<MemcacheStatus> duplicate() {
-    return new DeleteRequest(key, cas);
-  }
+    @Override
+    public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
-    final ResponsePacket reply = handleSingleReply(replies);
-
-    succeed(reply.status);
-  }
-
-  public boolean withCas() {
-    return cas != 0;
-  }
+    public boolean withCas() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

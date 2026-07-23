@@ -13,11 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.authenticate;
 
 import static java.util.Objects.requireNonNull;
-
 import com.spotify.folsom.MemcacheAuthenticationException;
 import com.spotify.folsom.MemcacheStatus;
 import com.spotify.folsom.RawMemcacheClient;
@@ -26,42 +24,22 @@ import java.util.concurrent.CompletionStage;
 
 public class AsciiAuthenticator implements Authenticator {
 
-  private final String username;
-  private final String password;
+    private final String username;
 
-  public AsciiAuthenticator(final String username, final String password) {
-    this.username = requireNonNull(username);
-    this.password = requireNonNull(password);
-  }
+    private final String password;
 
-  @Override
-  public CompletionStage<RawMemcacheClient> authenticate(final RawMemcacheClient client) {
-
-    final AsciiAuthenticateRequest asciiAuthenticateRequest =
-        new AsciiAuthenticateRequest(username, password);
-
-    return client
-        .connectFuture()
-        .thenCompose(
-            ignored ->
-                client
-                    .send(asciiAuthenticateRequest)
-                    .thenApply(
-                        status -> {
-                          if (status == MemcacheStatus.OK) {
-                            return client;
-                          } else if (status == MemcacheStatus.UNAUTHORIZED) {
-                            throw new MemcacheAuthenticationException("Authentication failed");
-                          } else {
-                            throw new RuntimeException("Unexpected status: " + status.name());
-                          }
-                        }));
-  }
-
-  @Override
-  public void validate(final boolean binary) {
-    if (binary) {
-      throw new IllegalStateException("Programmer error: wrong validator used");
+    public AsciiAuthenticator(final String username, final String password) {
+        this.username = requireNonNull(username);
+        this.password = requireNonNull(password);
     }
-  }
+
+    @Override
+    public CompletionStage<RawMemcacheClient> authenticate(final RawMemcacheClient client) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void validate(final boolean binary) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

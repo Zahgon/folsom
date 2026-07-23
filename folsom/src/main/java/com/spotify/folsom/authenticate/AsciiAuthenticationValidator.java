@@ -13,11 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.authenticate;
 
 import static com.spotify.folsom.client.Utils.unwrap;
-
 import com.spotify.folsom.RawMemcacheClient;
 import com.spotify.folsom.client.ascii.GetRequest;
 import java.nio.charset.StandardCharsets;
@@ -30,42 +28,24 @@ import java.util.concurrent.CompletionStage;
  */
 public class AsciiAuthenticationValidator implements Authenticator {
 
-  private static final AsciiAuthenticationValidator INSTANCE = new AsciiAuthenticationValidator();
+    private static final AsciiAuthenticationValidator INSTANCE = new AsciiAuthenticationValidator();
 
-  public static AsciiAuthenticationValidator getInstance() {
-    return INSTANCE;
-  }
-
-  private static final byte[] EXAMPLE_KEY =
-      "folsom_authentication_validation".getBytes(StandardCharsets.US_ASCII);
-
-  private AsciiAuthenticationValidator() {}
-
-  @Override
-  public CompletionStage<RawMemcacheClient> authenticate(final RawMemcacheClient client) {
-
-    final GetRequest request = new GetRequest(EXAMPLE_KEY, false);
-
-    return client
-        .connectFuture()
-        .thenCompose(
-            ignored ->
-                client
-                    .send(request)
-                    .handle(
-                        (status, throwable) -> {
-                          if (throwable == null) {
-                            return client;
-                          } else {
-                            throw new CompletionException(unwrap(throwable));
-                          }
-                        }));
-  }
-
-  @Override
-  public void validate(final boolean binary) {
-    if (binary) {
-      throw new IllegalStateException("Programmer error: wrong validator used");
+    public static AsciiAuthenticationValidator getInstance() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-  }
+
+    private static final byte[] EXAMPLE_KEY = "folsom_authentication_validation".getBytes(StandardCharsets.US_ASCII);
+
+    private AsciiAuthenticationValidator() {
+    }
+
+    @Override
+    public CompletionStage<RawMemcacheClient> authenticate(final RawMemcacheClient client) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void validate(final boolean binary) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

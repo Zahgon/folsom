@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.elasticache;
 
 import com.spotify.folsom.guava.HostAndPort;
@@ -21,19 +20,20 @@ import java.util.List;
 
 public class Response {
 
-  private final int configurationVersion;
-  private final List<HostAndPort> hosts;
+    private final int configurationVersion;
 
-  public Response(final int configurationVersion, final List<HostAndPort> result) {
-    this.configurationVersion = configurationVersion;
-    this.hosts = result;
-  }
+    private final List<HostAndPort> hosts;
 
-  public int getConfigurationVersion() {
-    return configurationVersion;
-  }
+    public Response(final int configurationVersion, final List<HostAndPort> result) {
+        this.configurationVersion = configurationVersion;
+        this.hosts = result;
+    }
 
-  public List<HostAndPort> getHosts() {
-    return hosts;
-  }
+    public int getConfigurationVersion() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    public List<HostAndPort> getHosts() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

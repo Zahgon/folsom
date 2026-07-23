@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.authenticate;
 
 import com.spotify.folsom.RawMemcacheClient;
@@ -22,10 +21,7 @@ import java.util.concurrent.CompletionStage;
 
 public class AuthenticatingClient {
 
-  public static CompletionStage<RawMemcacheClient> authenticate(
-      Connector connector, final Authenticator authenticator) {
-
-    CompletionStage<RawMemcacheClient> client = connector.connect();
-    return client.thenCompose(authenticator::authenticate);
-  }
+    public static CompletionStage<RawMemcacheClient> authenticate(Connector connector, final Authenticator authenticator) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom;
 
 import com.spotify.folsom.client.Request;
@@ -23,42 +22,42 @@ import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/** A raw memcache client, mostly useful internally */
+/**
+ * A raw memcache client, mostly useful internally
+ */
 public interface RawMemcacheClient extends ObservableClient {
 
-  <T> CompletionStage<T> send(Request<T> request);
+    <T> CompletionStage<T> send(Request<T> request);
 
-  /**
-   * Shut down the client. Use {@link #registerForConnectionChanges(ConnectionChangeListener)} to to
-   * get notified when it has (possibly) finished shutting down
-   */
-  void shutdown();
+    /**
+     * Shut down the client. Use {@link #registerForConnectionChanges(ConnectionChangeListener)} to to
+     * get notified when it has (possibly) finished shutting down
+     */
+    void shutdown();
 
-  /**
-   * How many actual socket connections do we have, including currently disconnected clients.
-   *
-   * @return the number of total connections
-   */
-  int numTotalConnections();
+    /**
+     * How many actual socket connections do we have, including currently disconnected clients.
+     *
+     * @return the number of total connections
+     */
+    int numTotalConnections();
 
-  /**
-   * How many active socket connections do we have (i.e. not disconnected)
-   *
-   * @return the number of active connections
-   */
-  int numActiveConnections();
+    /**
+     * How many active socket connections do we have (i.e. not disconnected)
+     *
+     * @return the number of active connections
+     */
+    int numActiveConnections();
 
-  default int numPendingRequests() {
-    throw new RuntimeException("numPendingRequests not implemented");
-  }
+    default int numPendingRequests() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  default Map<String, RawMemcacheClient> getAllNodes() {
-    return streamNodes()
-        .collect(Collectors.toMap(AddressAndClient::getAddressString, AddressAndClient::getClient));
-  }
+    default Map<String, RawMemcacheClient> getAllNodes() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  /** Intended for internal usage. Consumers should use {@link getAllNodes()} instead. */
-  default Stream<AddressAndClient> streamNodes() {
-    throw new RuntimeException("This client does not implement finding nodes");
-  }
+    default Stream<AddressAndClient> streamNodes() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

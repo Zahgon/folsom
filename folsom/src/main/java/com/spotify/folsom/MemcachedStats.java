@@ -16,36 +16,33 @@
 package com.spotify.folsom;
 
 import static java.util.Objects.requireNonNull;
-
 import java.util.Map;
 import java.util.Objects;
 
 public class MemcachedStats {
-  private final Map<String, String> stats;
 
-  public MemcachedStats(final Map<String, String> stats) {
-    this.stats = requireNonNull(stats);
-  }
+    private final Map<String, String> stats;
 
-  public Map<String, String> getStats() {
-    return stats;
-  }
+    public MemcachedStats(final Map<String, String> stats) {
+        this.stats = requireNonNull(stats);
+    }
 
-  @Override
-  public String toString() {
-    return "MemcachedStats{" + "stats=" + stats + '}';
-  }
+    public Map<String, String> getStats() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    MemcachedStats that = (MemcachedStats) o;
-    return stats.equals(that.stats);
-  }
+    @Override
+    public String toString() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(stats);
-  }
+    @Override
+    public boolean equals(Object o) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public int hashCode() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

@@ -13,24 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.transcoder;
 
 import com.spotify.folsom.Transcoder;
 
 public final class ByteArrayTranscoder implements Transcoder<byte[]> {
 
-  public static final ByteArrayTranscoder INSTANCE = new ByteArrayTranscoder();
+    public static final ByteArrayTranscoder INSTANCE = new ByteArrayTranscoder();
 
-  private ByteArrayTranscoder() {}
+    private ByteArrayTranscoder() {
+    }
 
-  @Override
-  public byte[] encode(final byte[] t) {
-    return t;
-  }
+    @Override
+    public byte[] encode(final byte[] t) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public byte[] decode(final byte[] b) {
-    return b;
-  }
+    @Override
+    public byte[] decode(final byte[] b) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

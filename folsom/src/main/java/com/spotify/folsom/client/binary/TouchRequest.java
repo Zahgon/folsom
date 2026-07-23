@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.binary;
 
 import com.spotify.folsom.MemcacheStatus;
@@ -28,33 +27,25 @@ import java.nio.ByteBuffer;
 
 public class TouchRequest extends BinaryRequest<MemcacheStatus> {
 
-  private final int ttl;
+    private final int ttl;
 
-  public TouchRequest(final byte[] key, final int ttl) {
-    super(key);
-    this.ttl = ttl;
-  }
+    public TouchRequest(final byte[] key, final int ttl) {
+        super(key);
+        this.ttl = ttl;
+    }
 
-  @Override
-  public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
-    final int expiration = Utils.ttlToExpiration(ttl);
-    final int extrasLength = 4;
+    @Override
+    public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    writeHeader(dst, OpCode.TOUCH, extrasLength, 0, 0);
-    dst.putInt(expiration);
-    dst.put(key);
+    @Override
+    public Request<MemcacheStatus> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    return toBuffer(alloc, dst);
-  }
-
-  @Override
-  public Request<MemcacheStatus> duplicate() {
-    return new TouchRequest(key, ttl);
-  }
-
-  @Override
-  public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
-    ResponsePacket reply = handleSingleReply(replies);
-    succeed(reply.status);
-  }
+    @Override
+    public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

@@ -35,309 +35,226 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class SemanticFolsomMetrics implements Metrics {
 
-  private final Timer gets;
-  private final Meter getHits;
-  private final Meter getMisses;
-  private final Meter getFailures;
+    private final Timer gets;
 
-  /** reports the ratio of hits for (gets + multigets) to total (gets + multigets) */
-  private final RatioGauge hitRatio;
+    private final Meter getHits;
 
-  private final Timer sets;
-  private final Meter setSuccesses;
-  private final Meter setFailures;
+    private final Meter getMisses;
 
-  private final Timer multigets;
-  private final Meter multigetSuccesses;
-  private final Meter multigetFailures;
+    private final Meter getFailures;
 
-  private final Timer deletes;
-  private final Meter deleteSuccesses;
-  private final Meter deleteFailures;
+    /**
+     * reports the ratio of hits for (gets + multigets) to total (gets + multigets)
+     */
+    private final RatioGauge hitRatio;
 
-  private final Timer incrDecrs;
-  private final Meter incrDecrSuccesses;
-  private final Meter incrDecrFailures;
+    private final Timer sets;
 
-  private final Timer touches;
-  private final Meter touchSuccesses;
-  private final Meter touchFailures;
+    private final Meter setSuccesses;
 
-  private final SemanticMetricRegistry registry;
-  private final MetricId id;
+    private final Meter setFailures;
 
-  private final Set<OutstandingRequestsGauge> gauges = new CopyOnWriteArraySet<>();
+    private final Timer multigets;
 
-  public SemanticFolsomMetrics(final SemanticMetricRegistry registry, final MetricId baseMetricId) {
+    private final Meter multigetSuccesses;
 
-    this.registry = registry;
+    private final Meter multigetFailures;
 
-    this.id =
-        baseMetricId.tagged(
-            "what", "memcache-results",
-            "component", "memcache-client");
+    private final Timer deletes;
 
-    final MetricId meterId = id.tagged("unit", "operations");
+    private final Meter deleteSuccesses;
 
-    MetricId getId = id.tagged("operation", "get");
-    this.gets = registry.timer(getId);
-    // successful gets are broken down by whether a result was found in the cache or not.
-    // the two meters can be summed to count total number of successes.
-    MetricId getMetersId = MetricId.join(getId, meterId);
-    this.getHits = registry.meter(getMetersId.tagged("result", "success", "cache-result", "hit"));
-    this.getMisses =
-        registry.meter(getMetersId.tagged("result", "success", "cache-result", "miss"));
-    this.getFailures = registry.meter(getMetersId.tagged("result", "failure"));
+    private final Meter deleteFailures;
 
-    // ratio of cache hits to total attempts
-    hitRatio =
-        new RatioGauge() {
-          @Override
-          protected Ratio getRatio() {
-            final double hitRate = getHits.getFiveMinuteRate();
-            final double missRate = getMisses.getFiveMinuteRate();
-            return Ratio.of(hitRate, hitRate + missRate);
-          }
+    private final Timer incrDecrs;
+
+    private final Meter incrDecrSuccesses;
+
+    private final Meter incrDecrFailures;
+
+    private final Timer touches;
+
+    private final Meter touchSuccesses;
+
+    private final Meter touchFailures;
+
+    private final SemanticMetricRegistry registry;
+
+    private final MetricId id;
+
+    private final Set<OutstandingRequestsGauge> gauges = new CopyOnWriteArraySet<>();
+
+    public SemanticFolsomMetrics(final SemanticMetricRegistry registry, final MetricId baseMetricId) {
+        this.registry = registry;
+        this.id = baseMetricId.tagged("what", "memcache-results", "component", "memcache-client");
+        final MetricId meterId = id.tagged("unit", "operations");
+        MetricId getId = id.tagged("operation", "get");
+        this.gets = registry.timer(getId);
+        // successful gets are broken down by whether a result was found in the cache or not.
+        // the two meters can be summed to count total number of successes.
+        MetricId getMetersId = MetricId.join(getId, meterId);
+        this.getHits = registry.meter(getMetersId.tagged("result", "success", "cache-result", "hit"));
+        this.getMisses = registry.meter(getMetersId.tagged("result", "success", "cache-result", "miss"));
+        this.getFailures = registry.meter(getMetersId.tagged("result", "failure"));
+        // ratio of cache hits to total attempts
+        hitRatio = new RatioGauge() {
+
+            @Override
+            protected Ratio getRatio() {
+                throw new UnsupportedOperationException("STUB: not implemented");
+            }
         };
-    // overwrite the 'what' as this metric doesn't make sense to be aggregated against any of the
-    // other metrics
-    registry.register(getId.tagged("what", "memcache-hit-ratio", "unit", "%"), hitRatio);
+        // overwrite the 'what' as this metric doesn't make sense to be aggregated against any of the
+        // other metrics
+        registry.register(getId.tagged("what", "memcache-hit-ratio", "unit", "%"), hitRatio);
+        MetricId setId = id.tagged("operation", "set");
+        this.sets = registry.timer(setId);
+        MetricId setMetersId = MetricId.join(setId, meterId);
+        this.setSuccesses = registry.meter(setMetersId.tagged("result", "success"));
+        this.setFailures = registry.meter(setMetersId.tagged("result", "failure"));
+        MetricId multigetId = id.tagged("operation", "multiget");
+        this.multigets = registry.timer(multigetId);
+        MetricId multigetMetersId = MetricId.join(multigetId, meterId);
+        this.multigetSuccesses = registry.meter(multigetMetersId.tagged("result", "success"));
+        this.multigetFailures = registry.meter(multigetMetersId.tagged("result", "failure"));
+        MetricId deleteId = id.tagged("operation", "delete");
+        this.deletes = registry.timer(deleteId);
+        MetricId deleteMetersId = MetricId.join(deleteId, meterId);
+        this.deleteSuccesses = registry.meter(deleteMetersId.tagged("result", "success"));
+        this.deleteFailures = registry.meter(deleteMetersId.tagged("result", "failure"));
+        MetricId incrDecrId = id.tagged("operation", "incr-decr");
+        this.incrDecrs = registry.timer(incrDecrId);
+        MetricId incrDecrMetersId = MetricId.join(incrDecrId, meterId);
+        this.incrDecrSuccesses = registry.meter(incrDecrMetersId.tagged("result", "success"));
+        this.incrDecrFailures = registry.meter(incrDecrMetersId.tagged("result", "failure"));
+        MetricId touchId = id.tagged("operation", "touch");
+        this.touches = registry.timer(touchId);
+        MetricId touchMetersId = MetricId.join(touchId, meterId);
+        this.touchSuccesses = registry.meter(touchMetersId.tagged("result", "success"));
+        this.touchFailures = registry.meter(touchMetersId.tagged("result", "failure"));
+        final MetricId outstandingRequestGauge = id.tagged("what", "outstanding-requests", "unit", "requests");
+        registry.register(outstandingRequestGauge, (Gauge<Long>) () -> gauges.stream().mapToLong(OutstandingRequestsGauge::getOutstandingRequests).sum());
+        final MetricId globalConnectionCountGauge = id.tagged("what", "global-connections", "unit", "connections");
+        registry.register(globalConnectionCountGauge, (Gauge<Integer>) Utils::getGlobalConnectionCount);
+    }
 
-    MetricId setId = id.tagged("operation", "set");
-    this.sets = registry.timer(setId);
-    MetricId setMetersId = MetricId.join(setId, meterId);
-    this.setSuccesses = registry.meter(setMetersId.tagged("result", "success"));
-    this.setFailures = registry.meter(setMetersId.tagged("result", "failure"));
+    @Override
+    public void measureGetFuture(CompletionStage<GetResult<byte[]>> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    MetricId multigetId = id.tagged("operation", "multiget");
-    this.multigets = registry.timer(multigetId);
-    MetricId multigetMetersId = MetricId.join(multigetId, meterId);
-    this.multigetSuccesses = registry.meter(multigetMetersId.tagged("result", "success"));
-    this.multigetFailures = registry.meter(multigetMetersId.tagged("result", "failure"));
+    @Override
+    public void measureSetFuture(CompletionStage<MemcacheStatus> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    MetricId deleteId = id.tagged("operation", "delete");
-    this.deletes = registry.timer(deleteId);
-    MetricId deleteMetersId = MetricId.join(deleteId, meterId);
-    this.deleteSuccesses = registry.meter(deleteMetersId.tagged("result", "success"));
-    this.deleteFailures = registry.meter(deleteMetersId.tagged("result", "failure"));
+    @Override
+    public void measureMultigetFuture(CompletionStage<List<GetResult<byte[]>>> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    MetricId incrDecrId = id.tagged("operation", "incr-decr");
-    this.incrDecrs = registry.timer(incrDecrId);
-    MetricId incrDecrMetersId = MetricId.join(incrDecrId, meterId);
-    this.incrDecrSuccesses = registry.meter(incrDecrMetersId.tagged("result", "success"));
-    this.incrDecrFailures = registry.meter(incrDecrMetersId.tagged("result", "failure"));
+    @Override
+    public void measureDeleteFuture(CompletionStage<MemcacheStatus> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    MetricId touchId = id.tagged("operation", "touch");
-    this.touches = registry.timer(touchId);
-    MetricId touchMetersId = MetricId.join(touchId, meterId);
-    this.touchSuccesses = registry.meter(touchMetersId.tagged("result", "success"));
-    this.touchFailures = registry.meter(touchMetersId.tagged("result", "failure"));
+    @Override
+    public void measureIncrDecrFuture(CompletionStage<Long> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    final MetricId outstandingRequestGauge =
-        id.tagged(
-            "what", "outstanding-requests",
-            "unit", "requests");
-    registry.register(
-        outstandingRequestGauge,
-        (Gauge<Long>)
-            () ->
-                gauges.stream().mapToLong(OutstandingRequestsGauge::getOutstandingRequests).sum());
+    @Override
+    public void measureTouchFuture(CompletionStage<MemcacheStatus> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    final MetricId globalConnectionCountGauge =
-        id.tagged("what", "global-connections", "unit", "connections");
-    registry.register(globalConnectionCountGauge, (Gauge<Integer>) Utils::getGlobalConnectionCount);
-  }
+    public Timer getGets() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureGetFuture(CompletionStage<GetResult<byte[]>> future) {
-    final Timer.Context context = gets.time();
+    public Meter getGetHits() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    future.whenComplete(
-        (result, t) -> {
-          context.stop();
-          if (t == null) {
-            if (result != null) {
-              getHits.mark();
-            } else {
-              getMisses.mark();
-            }
-          } else {
-            getFailures.mark();
-          }
-        });
-  }
+    public Meter getGetMisses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureSetFuture(CompletionStage<MemcacheStatus> future) {
-    final Timer.Context context = sets.time();
+    public Meter getGetFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    future.whenComplete(
-        (result, t) -> {
-          context.stop();
-          if (t == null) {
-            setSuccesses.mark();
-          } else {
-            setFailures.mark();
-          }
-        });
-  }
+    public Timer getSets() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureMultigetFuture(CompletionStage<List<GetResult<byte[]>>> future) {
-    final Timer.Context ctx = multigets.time();
+    public Meter getSetSuccesses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    future.whenComplete(
-        (result, t) -> {
-          ctx.stop();
-          if (t == null) {
-            multigetSuccesses.mark();
-            int hits = 0;
-            int total = result.size();
-            for (GetResult<byte[]> aResult : result) {
-              if (aResult != null) {
-                hits++;
-              }
-            }
-            getHits.mark(hits);
-            getMisses.mark(total - hits);
-          } else {
-            multigetFailures.mark();
-          }
-        });
-  }
+    public Meter getSetFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureDeleteFuture(CompletionStage<MemcacheStatus> future) {
-    final Timer.Context ctx = deletes.time();
+    public Timer getMultigets() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    future.whenComplete(
-        (result, t) -> {
-          ctx.stop();
-          if (t == null) {
-            deleteSuccesses.mark();
-          } else {
-            deleteFailures.mark();
-          }
-        });
-  }
+    public Meter getMultigetSuccesses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureIncrDecrFuture(CompletionStage<Long> future) {
-    final Timer.Context ctx = incrDecrs.time();
+    public Meter getMultigetFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    future.whenComplete(
-        (result, t) -> {
-          ctx.stop();
-          if (t == null) {
-            incrDecrSuccesses.mark();
-          } else {
-            incrDecrFailures.mark();
-          }
-        });
-  }
+    public Timer getDeletes() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureTouchFuture(CompletionStage<MemcacheStatus> future) {
-    final Timer.Context ctx = touches.time();
+    public Meter getDeleteSuccesses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    future.whenComplete(
-        (result, t) -> {
-          ctx.stop();
-          if (t == null) {
-            touchSuccesses.mark();
-          } else {
-            touchFailures.mark();
-          }
-        });
-  }
+    public Meter getDeleteFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Timer getGets() {
-    return gets;
-  }
+    public Timer getIncrDecrs() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getGetHits() {
-    return getHits;
-  }
+    public Meter getIncrDecrSuccesses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getGetMisses() {
-    return getMisses;
-  }
+    public Meter getIncrDecrFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getGetFailures() {
-    return getFailures;
-  }
+    public Timer getTouches() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Timer getSets() {
-    return sets;
-  }
+    public Meter getTouchSuccesses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getSetSuccesses() {
-    return setSuccesses;
-  }
+    public Meter getTouchFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getSetFailures() {
-    return setFailures;
-  }
+    public RatioGauge getHitRatio() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Timer getMultigets() {
-    return multigets;
-  }
+    @Override
+    public void registerOutstandingRequestsGauge(final OutstandingRequestsGauge gauge) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getMultigetSuccesses() {
-    return multigetSuccesses;
-  }
-
-  public Meter getMultigetFailures() {
-    return multigetFailures;
-  }
-
-  public Timer getDeletes() {
-    return deletes;
-  }
-
-  public Meter getDeleteSuccesses() {
-    return deleteSuccesses;
-  }
-
-  public Meter getDeleteFailures() {
-    return deleteFailures;
-  }
-
-  public Timer getIncrDecrs() {
-    return incrDecrs;
-  }
-
-  public Meter getIncrDecrSuccesses() {
-    return incrDecrSuccesses;
-  }
-
-  public Meter getIncrDecrFailures() {
-    return incrDecrFailures;
-  }
-
-  public Timer getTouches() {
-    return touches;
-  }
-
-  public Meter getTouchSuccesses() {
-    return touchSuccesses;
-  }
-
-  public Meter getTouchFailures() {
-    return touchFailures;
-  }
-
-  public RatioGauge getHitRatio() {
-    return hitRatio;
-  }
-
-  @Override
-  public void registerOutstandingRequestsGauge(final OutstandingRequestsGauge gauge) {
-    gauges.add(gauge);
-  }
-
-  @Override
-  public void unregisterOutstandingRequestsGauge(OutstandingRequestsGauge gauge) {
-    gauges.remove(gauge);
-  }
+    @Override
+    public void unregisterOutstandingRequestsGauge(OutstandingRequestsGauge gauge) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

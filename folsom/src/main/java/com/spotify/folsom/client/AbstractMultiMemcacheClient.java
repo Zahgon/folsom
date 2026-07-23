@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client;
 
 import com.google.common.base.Preconditions;
@@ -25,82 +24,60 @@ import com.spotify.folsom.ketama.AddressAndClient;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-public abstract class AbstractMultiMemcacheClient extends AbstractRawMemcacheClient
-    implements ConnectionChangeListener {
+public abstract class AbstractMultiMemcacheClient extends AbstractRawMemcacheClient implements ConnectionChangeListener {
 
-  protected final Collection<RawMemcacheClient> clients;
+    protected final Collection<RawMemcacheClient> clients;
 
-  public AbstractMultiMemcacheClient(final Collection<RawMemcacheClient> clients) {
-    Preconditions.checkArgument(!clients.isEmpty(), "clients must not be empty");
-    this.clients = clients;
-    for (RawMemcacheClient client : clients) {
-      client.registerForConnectionChanges(this);
+    public AbstractMultiMemcacheClient(final Collection<RawMemcacheClient> clients) {
+        Preconditions.checkArgument(!clients.isEmpty(), "clients must not be empty");
+        this.clients = clients;
+        for (RawMemcacheClient client : clients) {
+            client.registerForConnectionChanges(this);
+        }
     }
-  }
 
-  @Override
-  public void shutdown() {
-    for (final RawMemcacheClient client : clients) {
-      client.shutdown();
+    @Override
+    public void shutdown() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-  }
 
-  @Override
-  public boolean isConnected() {
-    for (final RawMemcacheClient client : clients) {
-      if (client.isConnected()) {
-        return true;
-      }
+    @Override
+    public boolean isConnected() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-    return false;
-  }
 
-  @Override
-  public int numTotalConnections() {
-    int sum = 0;
-    for (RawMemcacheClient client : clients) {
-      sum += client.numTotalConnections();
+    @Override
+    public int numTotalConnections() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-    return sum;
-  }
 
-  @Override
-  public int numActiveConnections() {
-    int sum = 0;
-    for (RawMemcacheClient client : clients) {
-      sum += client.numActiveConnections();
+    @Override
+    public int numActiveConnections() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-    return sum;
-  }
 
-  @Override
-  public int numPendingRequests() {
-    return this.clients.stream().mapToInt(RawMemcacheClient::numPendingRequests).sum();
-  }
-
-  @Override
-  public Stream<AddressAndClient> streamNodes() {
-    return clients.stream().flatMap(RawMemcacheClient::streamNodes);
-  }
-
-  @Override
-  public String toString() {
-    return getClass().getSimpleName() + "(" + clients + ")";
-  }
-
-  @Override
-  public void connectionChanged(ObservableClient client) {
-    notifyConnectionChange();
-  }
-
-  @Override
-  public Throwable getConnectionFailure() {
-    for (final RawMemcacheClient client : clients) {
-      final Throwable connectionFailure = client.getConnectionFailure();
-      if (connectionFailure != null) {
-        return connectionFailure;
-      }
+    @Override
+    public int numPendingRequests() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-    return null;
-  }
+
+    @Override
+    public Stream<AddressAndClient> streamNodes() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public String toString() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void connectionChanged(ObservableClient client) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Throwable getConnectionFailure() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

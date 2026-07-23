@@ -23,30 +23,21 @@ import java.util.concurrent.TimeUnit;
  */
 class TimeoutChecker<T> {
 
-  private final long timeoutNanos;
+    private final long timeoutNanos;
 
-  private T pending;
-  private long timestamp;
+    private T pending;
 
-  public TimeoutChecker(final TimeUnit unit, final long timeout) {
-    this.timeoutNanos = unit.toNanos(timeout);
-  }
+    private long timestamp;
 
-  public boolean check(final T current) {
-    final long nowNanos = System.nanoTime();
-
-    // New task?
-    if (current != pending) {
-      pending = current;
-      timestamp = nowNanos;
-      return false;
+    public TimeoutChecker(final TimeUnit unit, final long timeout) {
+        this.timeoutNanos = unit.toNanos(timeout);
     }
 
-    // Timed out?
-    return nowNanos - timestamp > timeoutNanos;
-  }
+    public boolean check(final T current) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public static <T> TimeoutChecker<T> create(final TimeUnit unit, final long timeout) {
-    return new TimeoutChecker<>(unit, timeout);
-  }
+    public static <T> TimeoutChecker<T> create(final TimeUnit unit, final long timeout) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

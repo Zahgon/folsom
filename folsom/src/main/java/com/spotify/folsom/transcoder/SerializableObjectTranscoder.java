@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.transcoder;
 
 import com.spotify.folsom.Transcoder;
@@ -22,21 +21,22 @@ import org.apache.commons.lang3.SerializationUtils;
 
 public final class SerializableObjectTranscoder<T extends Serializable> implements Transcoder<T> {
 
-  public static final SerializableObjectTranscoder INSTANCE = new SerializableObjectTranscoder<>();
+    public static final SerializableObjectTranscoder INSTANCE = new SerializableObjectTranscoder<>();
 
-  public static <T extends Serializable> SerializableObjectTranscoder<T> getInstance() {
-    return INSTANCE;
-  }
+    public static <T extends Serializable> SerializableObjectTranscoder<T> getInstance() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  private SerializableObjectTranscoder() {}
+    private SerializableObjectTranscoder() {
+    }
 
-  @Override
-  public byte[] encode(final Serializable t) {
-    return SerializationUtils.serialize(t);
-  }
+    @Override
+    public byte[] encode(final Serializable t) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public T decode(final byte[] b) {
-    return (T) SerializationUtils.deserialize(b);
-  }
+    @Override
+    public T decode(final byte[] b) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

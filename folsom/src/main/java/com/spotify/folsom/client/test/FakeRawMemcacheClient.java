@@ -42,141 +42,87 @@ import java.util.stream.Stream;
 
 public class FakeRawMemcacheClient extends AbstractRawMemcacheClient {
 
-  private boolean connected = true;
-  private final Map<ByteBuffer, byte[]> map = new HashMap<>();
-  private int outstanding = 0;
-  private final String address;
-  private Throwable failure;
+    private boolean connected = true;
 
-  public FakeRawMemcacheClient() {
-    this(new NoopMetrics());
-  }
+    private final Map<ByteBuffer, byte[]> map = new HashMap<>();
 
-  public FakeRawMemcacheClient(final Metrics metrics) {
-    this(metrics, "address:123");
-  }
+    private int outstanding = 0;
 
-  public FakeRawMemcacheClient(final Metrics metrics, final String address) {
-    metrics.registerOutstandingRequestsGauge(() -> outstanding);
-    this.address = address;
-  }
+    private final String address;
 
-  @Override
-  public <T> CompletionStage<T> send(Request<T> request) {
-    if (!connected) {
-      return CompletableFutures.exceptionallyCompletedFuture(
-          new MemcacheClosedException("Disconnected"));
+    private Throwable failure;
+
+    public FakeRawMemcacheClient() {
+        this(new NoopMetrics());
     }
 
-    if (request instanceof SetRequest) {
-      map.put(ByteBuffer.wrap(request.getKey()), ((SetRequest) request).getValue());
-      return (CompletionStage<T>) CompletableFuture.completedFuture(MemcacheStatus.OK);
+    public FakeRawMemcacheClient(final Metrics metrics) {
+        this(metrics, "address:123");
     }
 
-    if (request instanceof GetRequest) {
-      byte[] value = map.get(ByteBuffer.wrap(request.getKey()));
-      if (value == null) {
-        return CompletableFuture.completedFuture(null);
-      }
-      return (CompletionStage<T>)
-          CompletableFuture.completedFuture(GetResult.success(value, 0L, 0));
+    public FakeRawMemcacheClient(final Metrics metrics, final String address) {
+        metrics.registerOutstandingRequestsGauge(() -> outstanding);
+        this.address = address;
     }
 
-    if (request instanceof MultiRequest) {
-      List<GetResult<byte[]>> result = new ArrayList<>();
-      MultiRequest<?> multiRequest = (MultiRequest<?>) request;
-      for (byte[] key : multiRequest.getKeys()) {
-        byte[] value = map.get(ByteBuffer.wrap(key));
-        if (value != null) {
-          result.add(GetResult.success(value, 0, 0));
-        } else {
-          result.add(null);
-        }
-      }
-      return (CompletionStage<T>) CompletableFuture.completedFuture(result);
+    @Override
+    public <T> CompletionStage<T> send(Request<T> request) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    // Don't actually do anything here
-    if (request instanceof TouchRequest) {
-      return (CompletionStage<T>) CompletableFuture.completedFuture(MemcacheStatus.OK);
+    @Override
+    public void shutdown() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    if (request instanceof IncrRequest) {
-      IncrRequest incrRequest = (IncrRequest) request;
-      byte[] key = request.getKey();
-      byte[] value = map.get(ByteBuffer.wrap(key));
-      if (value == null) {
-        return (CompletionStage<T>) CompletableFuture.completedFuture(null);
-      }
-      long longValue = Long.parseLong(new String(value));
-      long newValue = longValue + incrRequest.multiplier() * incrRequest.getBy();
-      map.put(ByteBuffer.wrap(key), Long.toString(newValue).getBytes());
-      return (CompletionStage<T>) CompletableFuture.completedFuture(newValue);
+    public void setConnected() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    if (request instanceof DeleteRequest) {
-      map.remove(ByteBuffer.wrap(request.getKey()));
-      return (CompletionStage<T>) CompletableFuture.completedFuture(MemcacheStatus.OK);
+    public void setFailure(Throwable failure) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    throw new RuntimeException("Unsupported operation: " + request.getClass());
-  }
+    @Override
+    public boolean isConnected() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void shutdown() {
-    connected = false;
-    notifyConnectionChange();
-  }
+    @Override
+    public Throwable getConnectionFailure() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public void setConnected() {
-    connected = true;
-    notifyConnectionChange();
-  }
+    @Override
+    public int numTotalConnections() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public void setFailure(Throwable failure) {
-    this.failure = failure;
-  }
+    @Override
+    public int numActiveConnections() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public boolean isConnected() {
-    return connected;
-  }
+    @Override
+    public int numPendingRequests() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public Throwable getConnectionFailure() {
-    return failure;
-  }
+    @Override
+    public Stream<AddressAndClient> streamNodes() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public int numTotalConnections() {
-    return 1;
-  }
+    public Map<ByteBuffer, byte[]> getMap() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public int numActiveConnections() {
-    return connected ? 1 : 0;
-  }
+    public void setOutstandingRequests(int outstanding) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public int numPendingRequests() {
-    return outstanding;
-  }
-
-  @Override
-  public Stream<AddressAndClient> streamNodes() {
-    return Stream.of(new AddressAndClient(HostAndPort.fromString(address), this));
-  }
-
-  public Map<ByteBuffer, byte[]> getMap() {
-    return map;
-  }
-
-  public void setOutstandingRequests(int outstanding) {
-    this.outstanding = outstanding;
-  }
-
-  @Override
-  public String toString() {
-    return "FakeRawMemcacheClient{" + "address='" + address + '\'' + '}';
-  }
+    @Override
+    public String toString() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

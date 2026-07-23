@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.binary;
 
 import com.spotify.folsom.MemcacheStatus;
@@ -28,41 +27,34 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-public class FlushRequest extends BinaryRequest<MemcacheStatus>
-    implements AllRequest<MemcacheStatus> {
+public class FlushRequest extends BinaryRequest<MemcacheStatus> implements AllRequest<MemcacheStatus> {
 
-  public static final byte[] NO_KEY = new byte[0];
-  private final int delay;
+    public static final byte[] NO_KEY = new byte[0];
 
-  public FlushRequest(final int delay) {
-    super(NO_KEY);
-    this.delay = delay;
-  }
+    private final int delay;
 
-  @Override
-  public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
-    final int expiration = Utils.ttlToExpiration(delay);
-    final int extrasLength = 4;
+    public FlushRequest(final int delay) {
+        super(NO_KEY);
+        this.delay = delay;
+    }
 
-    writeHeader(dst, OpCode.FLUSH, extrasLength, 0, 0);
-    dst.putInt(expiration);
+    @Override
+    public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    return toBuffer(alloc, dst);
-  }
+    @Override
+    public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void handle(final BinaryResponse replies, final HostAndPort server) throws IOException {
-    ResponsePacket reply = handleSingleReply(replies);
-    succeed(reply.status);
-  }
+    @Override
+    public MemcacheStatus merge(List<MemcacheStatus> results) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public MemcacheStatus merge(List<MemcacheStatus> results) {
-    return AllRequest.mergeMemcacheStatus(results);
-  }
-
-  @Override
-  public Request<MemcacheStatus> duplicate() {
-    return new FlushRequest(delay);
-  }
+    @Override
+    public Request<MemcacheStatus> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

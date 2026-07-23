@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.ascii;
 
 import java.util.ArrayList;
@@ -21,17 +20,17 @@ import java.util.List;
 
 public class ValueAsciiResponse extends AsciiResponse {
 
-  public final List<ValueResponse> values = new ArrayList<>(50);
+    public final List<ValueResponse> values = new ArrayList<>(50);
 
-  public ValueAsciiResponse() {
-    super(Type.VALUE);
-  }
+    public ValueAsciiResponse() {
+        super(Type.VALUE);
+    }
 
-  public void addGetResult(byte[] key, byte[] value, long cas, int flags) {
-    values.add(new ValueResponse(key, value, cas, flags));
-  }
+    public void addGetResult(byte[] key, byte[] value, long cas, int flags) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public boolean isEmpty() {
-    return values.isEmpty();
-  }
+    public boolean isEmpty() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

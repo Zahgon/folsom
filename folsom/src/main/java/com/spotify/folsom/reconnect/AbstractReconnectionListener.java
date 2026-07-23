@@ -30,38 +30,29 @@ import javax.annotation.Nullable;
  * @see ReconnectionListener
  */
 public abstract class AbstractReconnectionListener implements ReconnectionListener {
-  /** {@inheritDoc} */
-  @Override
-  public void connectionFailure(final Throwable cause) {
-    // No-op.
-  }
 
-  /** {@inheritDoc} */
-  @Override
-  public void connectionLost(final @Nullable Throwable cause, final HostAndPort address) {
-    // No-op.
-  }
+    @Override
+    public void connectionFailure(final Throwable cause) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  /** {@inheritDoc} */
-  @Override
-  public void reconnectionSuccessful(
-      final HostAndPort address, final int attempt, final boolean willStayConnected) {
-    // No-op.
-  }
+    @Override
+    public void connectionLost(@Nullable final Throwable cause, final HostAndPort address) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  /** {@inheritDoc} */
-  @Override
-  public void reconnectionCancelled() {
-    // No-op.
-  }
+    @Override
+    public void reconnectionSuccessful(final HostAndPort address, final int attempt, final boolean willStayConnected) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  /** {@inheritDoc} */
-  @Override
-  public void reconnectionQueuedFromError(
-      final Throwable cause,
-      final HostAndPort address,
-      final long backOffMillis,
-      final int attempt) {
-    // No-op.
-  }
+    @Override
+    public void reconnectionCancelled() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void reconnectionQueuedFromError(final Throwable cause, final HostAndPort address, final long backOffMillis, final int attempt) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

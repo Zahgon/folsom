@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.ascii;
 
 import com.spotify.folsom.MemcacheAuthenticationException;
@@ -28,42 +27,24 @@ import java.nio.charset.StandardCharsets;
 
 public class DeleteRequest extends AsciiRequest<MemcacheStatus> {
 
-  private static final byte[] CMD_BYTES = "delete ".getBytes(StandardCharsets.US_ASCII);
+    private static final byte[] CMD_BYTES = "delete ".getBytes(StandardCharsets.US_ASCII);
 
-  public DeleteRequest(final byte[] key) {
-    super(key);
-  }
-
-  @Override
-  public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
-    dst.put(CMD_BYTES);
-    dst.put(key);
-    dst.put(NEWLINE_BYTES);
-    return toBuffer(alloc, dst);
-  }
-
-  @Override
-  public Request<MemcacheStatus> duplicate() {
-    return new DeleteRequest(key);
-  }
-
-  @Override
-  public void handle(final AsciiResponse response, final HostAndPort server) throws IOException {
-    switch (response.type) {
-      case DELETED:
-        succeed(MemcacheStatus.OK);
-        return;
-      case NOT_FOUND:
-        succeed(MemcacheStatus.KEY_NOT_FOUND);
-        return;
-      case CLIENT_ERROR:
-        MemcacheAuthenticationException exception =
-            new MemcacheAuthenticationException(
-                "Authentication required by server. Client not authenticated.");
-        fail(exception, server);
-        return;
-      default:
-        throw new IOException("Unexpected response type: " + response.type);
+    public DeleteRequest(final byte[] key) {
+        super(key);
     }
-  }
+
+    @Override
+    public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Request<MemcacheStatus> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void handle(final AsciiResponse response, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

@@ -35,93 +35,51 @@ import org.slf4j.LoggerFactory;
  */
 public class CatchingReconnectionListener implements ReconnectionListener {
 
-  private static final Logger log = LoggerFactory.getLogger(CatchingReconnectionListener.class);
+    private static final Logger log = LoggerFactory.getLogger(CatchingReconnectionListener.class);
 
-  private final ReconnectionListener delegate;
+    private final ReconnectionListener delegate;
 
-  public CatchingReconnectionListener(final ReconnectionListener delegate) {
-    this.delegate = Objects.requireNonNull(delegate, "delegate must not be null");
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void connectionFailure(final Throwable cause) {
-    try {
-      delegate.connectionFailure(cause);
-    } catch (final Exception ex) {
-      log.warn("Delegate ReconnectionListener threw on #connectionFailure: {}", this.delegate, ex);
+    public CatchingReconnectionListener(final ReconnectionListener delegate) {
+        this.delegate = Objects.requireNonNull(delegate, "delegate must not be null");
     }
-  }
 
-  /** {@inheritDoc} */
-  @Override
-  public void reconnectionCancelled() {
-    try {
-      delegate.reconnectionCancelled();
-    } catch (final Exception ex) {
-      log.warn(
-          "Delegate ReconnectionListener threw on #reconnectionCancelled: {}", this.delegate, ex);
+    @Override
+    public void connectionFailure(final Throwable cause) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-  }
 
-  /** {@inheritDoc} */
-  @Override
-  public void reconnectionSuccessful(
-      final HostAndPort address, final int attempt, final boolean willStayConnected) {
-    try {
-      delegate.reconnectionSuccessful(address, attempt, willStayConnected);
-    } catch (final Exception ex) {
-      log.warn(
-          "Delegate ReconnectionListener threw on #reconnectionSuccessful: {}", this.delegate, ex);
+    @Override
+    public void reconnectionCancelled() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-  }
 
-  /** {@inheritDoc} */
-  @Override
-  public void connectionLost(final @Nullable Throwable cause, final HostAndPort address) {
-    try {
-      delegate.connectionLost(cause, address);
-    } catch (final Exception ex) {
-      log.warn("Delegate ReconnectionListener threw on #connectionLost: {}", this.delegate, ex);
+    @Override
+    public void reconnectionSuccessful(final HostAndPort address, final int attempt, final boolean willStayConnected) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-  }
 
-  /** {@inheritDoc} */
-  @Override
-  public void reconnectionQueuedFromError(
-      final Throwable cause,
-      final HostAndPort address,
-      final long backOffMillis,
-      final int attempt) {
-    try {
-      delegate.reconnectionQueuedFromError(cause, address, backOffMillis, attempt);
-    } catch (final Exception ex) {
-      log.warn(
-          "Delegate ReconnectionListener threw on #reconnectionQueuedFromError: {}",
-          this.delegate,
-          ex);
+    @Override
+    public void connectionLost(@Nullable final Throwable cause, final HostAndPort address) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-  }
 
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
+    @Override
+    public void reconnectionQueuedFromError(final Throwable cause, final HostAndPort address, final long backOffMillis, final int attempt) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-    if (!(o instanceof CatchingReconnectionListener)) {
-      return false;
+
+    @Override
+    public boolean equals(final Object o) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-    final CatchingReconnectionListener that = (CatchingReconnectionListener) o;
-    return this.delegate.equals(that.delegate);
-  }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(this.delegate);
-  }
+    @Override
+    public int hashCode() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public String toString() {
-    return "CatchingReconnectionListener{delegate=" + this.delegate + '}';
-  }
+    @Override
+    public String toString() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

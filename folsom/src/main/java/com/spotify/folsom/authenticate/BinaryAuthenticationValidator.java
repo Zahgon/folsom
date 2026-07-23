@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.authenticate;
 
 import com.spotify.folsom.RawMemcacheClient;
@@ -22,28 +21,22 @@ import java.util.concurrent.CompletionStage;
 
 public class BinaryAuthenticationValidator implements Authenticator {
 
-  private static final BinaryAuthenticationValidator INSTANCE = new BinaryAuthenticationValidator();
+    private static final BinaryAuthenticationValidator INSTANCE = new BinaryAuthenticationValidator();
 
-  public static BinaryAuthenticationValidator getInstance() {
-    return INSTANCE;
-  }
-
-  private BinaryAuthenticationValidator() {}
-
-  @Override
-  public CompletionStage<RawMemcacheClient> authenticate(RawMemcacheClient client) {
-
-    final NoopRequest request = new NoopRequest();
-
-    return client
-        .connectFuture()
-        .thenCompose(ignored -> client.send(request).thenApply(status -> client));
-  }
-
-  @Override
-  public void validate(final boolean binary) {
-    if (!binary) {
-      throw new IllegalStateException("Programmer error: wrong validator used");
+    public static BinaryAuthenticationValidator getInstance() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-  }
+
+    private BinaryAuthenticationValidator() {
+    }
+
+    @Override
+    public CompletionStage<RawMemcacheClient> authenticate(RawMemcacheClient client) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void validate(final boolean binary) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

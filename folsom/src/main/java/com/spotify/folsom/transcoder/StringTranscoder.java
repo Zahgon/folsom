@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.transcoder;
 
 import com.spotify.folsom.Transcoder;
@@ -22,21 +21,21 @@ import java.nio.charset.StandardCharsets;
 
 public class StringTranscoder implements Transcoder<String> {
 
-  public static final StringTranscoder UTF8_INSTANCE = new StringTranscoder(StandardCharsets.UTF_8);
+    public static final StringTranscoder UTF8_INSTANCE = new StringTranscoder(StandardCharsets.UTF_8);
 
-  private final Charset charset;
+    private final Charset charset;
 
-  public StringTranscoder(final Charset charset) {
-    this.charset = charset;
-  }
+    public StringTranscoder(final Charset charset) {
+        this.charset = charset;
+    }
 
-  @Override
-  public byte[] encode(final String t) {
-    return t.getBytes(charset);
-  }
+    @Override
+    public byte[] encode(final String t) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public String decode(final byte[] b) {
-    return new String(b, charset);
-  }
+    @Override
+    public String decode(final byte[] b) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

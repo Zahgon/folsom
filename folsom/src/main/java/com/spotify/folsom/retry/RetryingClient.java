@@ -16,7 +16,6 @@
 package com.spotify.folsom.retry;
 
 import static com.spotify.folsom.client.Utils.unwrap;
-
 import com.spotify.folsom.ConnectionChangeListener;
 import com.spotify.folsom.MemcacheClosedException;
 import com.spotify.folsom.RawMemcacheClient;
@@ -38,81 +37,69 @@ import java.util.stream.Stream;
  */
 public class RetryingClient implements RawMemcacheClient {
 
-  private final RawMemcacheClient delegate;
+    private final RawMemcacheClient delegate;
 
-  public RetryingClient(final RawMemcacheClient delegate) {
-    this.delegate = delegate;
-  }
+    public RetryingClient(final RawMemcacheClient delegate) {
+        this.delegate = delegate;
+    }
 
-  @Override
-  public <T> CompletionStage<T> send(final Request<T> request) {
-    final CompletionStage<T> future = delegate.send(request);
-    return CompletableFutures.exceptionallyCompose(
-        future,
-        e -> {
-          e = unwrap(e);
-          if (e instanceof MemcacheClosedException && delegate.isConnected()) {
-            return delegate.send(request);
-          } else {
-            return CompletableFutures.exceptionallyCompletedFuture(e);
-          }
-        });
-  }
+    @Override
+    public <T> CompletionStage<T> send(final Request<T> request) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void shutdown() {
-    delegate.shutdown();
-  }
+    @Override
+    public void shutdown() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public boolean isConnected() {
-    return delegate.isConnected();
-  }
+    @Override
+    public boolean isConnected() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public Throwable getConnectionFailure() {
-    return delegate.getConnectionFailure();
-  }
+    @Override
+    public Throwable getConnectionFailure() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public int numTotalConnections() {
-    return delegate.numTotalConnections();
-  }
+    @Override
+    public int numTotalConnections() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public int numActiveConnections() {
-    return delegate.numActiveConnections();
-  }
+    @Override
+    public int numActiveConnections() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public int numPendingRequests() {
-    return this.delegate.numPendingRequests();
-  }
+    @Override
+    public int numPendingRequests() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public Stream<AddressAndClient> streamNodes() {
-    return delegate
-        .streamNodes()
-        .map(addressAndClient -> addressAndClient.mapClient(RetryingClient::new));
-  }
+    @Override
+    public Stream<AddressAndClient> streamNodes() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void registerForConnectionChanges(ConnectionChangeListener listener) {
-    delegate.registerForConnectionChanges(listener);
-  }
+    @Override
+    public void registerForConnectionChanges(ConnectionChangeListener listener) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void unregisterForConnectionChanges(ConnectionChangeListener listener) {
-    delegate.unregisterForConnectionChanges(listener);
-  }
+    @Override
+    public void unregisterForConnectionChanges(ConnectionChangeListener listener) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void notifyConnectionChange() {
-    delegate.notifyConnectionChange();
-  }
+    @Override
+    public void notifyConnectionChange() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public String toString() {
-    return "Retrying(" + delegate + ")";
-  }
+    @Override
+    public String toString() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

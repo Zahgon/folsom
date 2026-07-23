@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom;
 
 import java.util.concurrent.CompletionStage;
@@ -26,107 +25,89 @@ import java.util.concurrent.TimeoutException;
  * notify listeners of connection state changes.
  */
 public interface ObservableClient {
-  /**
-   * Register for connection change events. This should trigger at least once for every connection
-   * change. You should immediately get an initial callback, so that if you are creating a
-   * CompletionStage looking for a connection state that has already been reached it will return
-   * immediately.
-   *
-   * @param listener the listener to notify of connection changes
-   */
-  void registerForConnectionChanges(ConnectionChangeListener listener);
 
-  /**
-   * Unregister the provided listener so that it no longer receives connection change callbacks.
-   *
-   * @param listener the listener to unregister.
-   */
-  void unregisterForConnectionChanges(ConnectionChangeListener listener);
+    /**
+     * Register for connection change events. This should trigger at least once for every connection
+     * change. You should immediately get an initial callback, so that if you are creating a
+     * CompletionStage looking for a connection state that has already been reached it will return
+     * immediately.
+     *
+     * @param listener the listener to notify of connection changes
+     */
+    void registerForConnectionChanges(ConnectionChangeListener listener);
 
-  /**
-   * Is the client connected to a server?
-   *
-   * @return true if the client is connected
-   */
-  boolean isConnected();
+    /**
+     * Unregister the provided listener so that it no longer receives connection change callbacks.
+     *
+     * @param listener the listener to unregister.
+     */
+    void unregisterForConnectionChanges(ConnectionChangeListener listener);
 
-  /** @return completes when at least one underlying client is connected */
-  default CompletionStage<Void> connectFuture() {
-    return ConnectFuture.connectFuture(this);
-  }
+    /**
+     * Is the client connected to a server?
+     *
+     * @return true if the client is connected
+     */
+    boolean isConnected();
 
-  /** @return completes when at least one underlying client is disconnected */
-  default CompletionStage<Void> disconnectFuture() {
-    return ConnectFuture.disconnectFuture(this);
-  }
-
-  /** @return completes when all underlying clients are connected */
-  default CompletionStage<Void> fullyConnectedFuture() {
-    return ConnectFuture.fullyConnectedFuture(this);
-  }
-
-  /** @return completes when all underlying clients are disconnected */
-  default CompletionStage<Void> fullyDisconnectFuture() {
-    return ConnectFuture.fullyDisconnectedFuture(this);
-  }
-
-  /** Wait for at least one underlying client to be connected */
-  default void awaitConnected(final long waitTime, final TimeUnit unit)
-      throws TimeoutException, InterruptedException {
-    awaitFuture(connectFuture(), waitTime, unit);
-  }
-
-  /** Wait for at least one underlying client to be disconnected */
-  default void awaitDisconnected(final long waitTime, final TimeUnit unit)
-      throws TimeoutException, InterruptedException {
-    awaitFuture(disconnectFuture(), waitTime, unit);
-  }
-
-  /** Wait for all underlying clients to be connected */
-  default void awaitFullyConnected(final long waitTime, final TimeUnit unit)
-      throws TimeoutException, InterruptedException {
-    awaitFuture(fullyConnectedFuture(), waitTime, unit);
-  }
-
-  /** Wait for all underlying clients to be disconnected */
-  default void awaitFullyDisconnected(final long waitTime, final TimeUnit unit)
-      throws TimeoutException, InterruptedException {
-    awaitFuture(fullyDisconnectFuture(), waitTime, unit);
-  }
-
-  default void awaitFuture(
-      final CompletionStage<Void> future, final long waitTime, final TimeUnit unit)
-      throws InterruptedException, TimeoutException {
-    try {
-      future.toCompletableFuture().get(waitTime, unit);
-    } catch (final ExecutionException e) {
-      if (e.getCause() instanceof MemcacheAuthenticationException) {
-        throw (MemcacheAuthenticationException) e.getCause();
-      }
-      throw new RuntimeException(e);
+    default CompletionStage<Void> connectFuture() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-  }
 
-  /**
-   * Returns the unrecoverable connection failure, if any.
-   *
-   * @return null, if there's no connection failure
-   */
-  Throwable getConnectionFailure();
+    default CompletionStage<Void> disconnectFuture() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  /**
-   * How many actual socket connections do we have, including currently disconnected clients.
-   *
-   * @return the number of total connections
-   */
-  int numTotalConnections();
+    default CompletionStage<Void> fullyConnectedFuture() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  /**
-   * How many active socket connections do we have (i.e. not disconnected)
-   *
-   * @return the number of active connections
-   */
-  int numActiveConnections();
+    default CompletionStage<Void> fullyDisconnectFuture() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  default void notifyConnectionChange() {}
+    default void awaitConnected(final long waitTime, final TimeUnit unit) throws TimeoutException, InterruptedException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    default void awaitDisconnected(final long waitTime, final TimeUnit unit) throws TimeoutException, InterruptedException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    default void awaitFullyConnected(final long waitTime, final TimeUnit unit) throws TimeoutException, InterruptedException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    default void awaitFullyDisconnected(final long waitTime, final TimeUnit unit) throws TimeoutException, InterruptedException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    default void awaitFuture(final CompletionStage<Void> future, final long waitTime, final TimeUnit unit) throws InterruptedException, TimeoutException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    /**
+     * Returns the unrecoverable connection failure, if any.
+     *
+     * @return null, if there's no connection failure
+     */
+    Throwable getConnectionFailure();
+
+    /**
+     * How many actual socket connections do we have, including currently disconnected clients.
+     *
+     * @return the number of total connections
+     */
+    int numTotalConnections();
+
+    /**
+     * How many active socket connections do we have (i.e. not disconnected)
+     *
+     * @return the number of active connections
+     */
+    int numActiveConnections();
+
+    default void notifyConnectionChange() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

@@ -16,45 +16,58 @@
 package com.spotify.folsom.client.ascii;
 
 public class AsciiResponse {
-  public static final AsciiResponse STORED = new AsciiResponse(Type.STORED);
-  public static final AsciiResponse EXISTS = new AsciiResponse(Type.EXISTS);
-  public static final AsciiResponse DELETED = new AsciiResponse(Type.DELETED);
-  public static final AsciiResponse NOT_FOUND = new AsciiResponse(Type.NOT_FOUND);
-  public static final AsciiResponse NOT_STORED = new AsciiResponse(Type.NOT_STORED);
-  public static final AsciiResponse TOUCHED = new AsciiResponse(Type.TOUCHED);
-  public static final AsciiResponse OK = new AsciiResponse(Type.OK);
-  public static final AsciiResponse EMPTY_LIST = new AsciiResponse(Type.EMPTY_LIST);
-  public static final AsciiResponse ERROR = new AsciiResponse(Type.ERROR);
-  public static final AsciiResponse VALUE_TOO_LARGE = new AsciiResponse(Type.VALUE_TOO_LARGE);
-  public static final AsciiResponse OUT_OF_MEMORY = new AsciiResponse(Type.OUT_OF_MEMORY);
-  public static final AsciiResponse CLIENT_ERROR = new AsciiResponse(Type.CLIENT_ERROR);
 
-  public final Type type;
+    public static final AsciiResponse STORED = new AsciiResponse(Type.STORED);
 
-  protected AsciiResponse(Type type) {
-    this.type = type;
-  }
+    public static final AsciiResponse EXISTS = new AsciiResponse(Type.EXISTS);
 
-  public enum Type {
-    VALUE,
-    NUMERIC_VALUE,
-    STORED,
-    EXISTS,
-    DELETED,
-    NOT_FOUND,
-    NOT_STORED,
-    TOUCHED,
-    OK,
-    STATS,
-    EMPTY_LIST,
-    ERROR,
-    VALUE_TOO_LARGE,
-    OUT_OF_MEMORY,
-    CLIENT_ERROR
-  }
+    public static final AsciiResponse DELETED = new AsciiResponse(Type.DELETED);
 
-  @Override
-  public String toString() {
-    return "AsciiResponse{type=" + this.type + "}";
-  }
+    public static final AsciiResponse NOT_FOUND = new AsciiResponse(Type.NOT_FOUND);
+
+    public static final AsciiResponse NOT_STORED = new AsciiResponse(Type.NOT_STORED);
+
+    public static final AsciiResponse TOUCHED = new AsciiResponse(Type.TOUCHED);
+
+    public static final AsciiResponse OK = new AsciiResponse(Type.OK);
+
+    public static final AsciiResponse EMPTY_LIST = new AsciiResponse(Type.EMPTY_LIST);
+
+    public static final AsciiResponse ERROR = new AsciiResponse(Type.ERROR);
+
+    public static final AsciiResponse VALUE_TOO_LARGE = new AsciiResponse(Type.VALUE_TOO_LARGE);
+
+    public static final AsciiResponse OUT_OF_MEMORY = new AsciiResponse(Type.OUT_OF_MEMORY);
+
+    public static final AsciiResponse CLIENT_ERROR = new AsciiResponse(Type.CLIENT_ERROR);
+
+    public final Type type;
+
+    protected AsciiResponse(Type type) {
+        this.type = type;
+    }
+
+    public enum Type {
+
+        VALUE,
+        NUMERIC_VALUE,
+        STORED,
+        EXISTS,
+        DELETED,
+        NOT_FOUND,
+        NOT_STORED,
+        TOUCHED,
+        OK,
+        STATS,
+        EMPTY_LIST,
+        ERROR,
+        VALUE_TOO_LARGE,
+        OUT_OF_MEMORY,
+        CLIENT_ERROR
+    }
+
+    @Override
+    public String toString() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

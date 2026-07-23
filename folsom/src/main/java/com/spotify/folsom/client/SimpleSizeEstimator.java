@@ -20,20 +20,18 @@ import io.netty.channel.MessageSizeEstimator;
 
 class SimpleSizeEstimator implements MessageSizeEstimator, MessageSizeEstimator.Handle {
 
-  static final MessageSizeEstimator INSTANCE = new SimpleSizeEstimator();
+    static final MessageSizeEstimator INSTANCE = new SimpleSizeEstimator();
 
-  private SimpleSizeEstimator() {}
-
-  @Override
-  public Handle newHandle() {
-    return this;
-  }
-
-  @Override
-  public int size(final Object msg) {
-    if (msg instanceof ByteBuf) {
-      return ((ByteBuf) msg).readableBytes();
+    private SimpleSizeEstimator() {
     }
-    return 0;
-  }
+
+    @Override
+    public Handle newHandle() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public int size(final Object msg) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

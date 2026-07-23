@@ -27,135 +27,102 @@ import java.util.concurrent.CompletionStage;
  */
 public interface BinaryMemcacheClient<V> extends MemcacheClient<V> {
 
-  /**
-   * Add a key in memcache with the provided value, with the specified TTL. Key must not exist in
-   * memcache
-   *
-   * @param key The key, must not be null
-   * @param value The value, must not be null
-   * @param ttl The TTL in seconds
-   * @param cas The CAS value, must match the value on the server for the set to go through
-   * @return A future representing completion of the request, containing the new CAS value
-   */
-  CompletionStage<MemcacheStatus> add(String key, V value, int ttl, long cas);
+    /**
+     * Add a key in memcache with the provided value, with the specified TTL. Key must not exist in
+     * memcache
+     *
+     * @param key The key, must not be null
+     * @param value The value, must not be null
+     * @param ttl The TTL in seconds
+     * @param cas The CAS value, must match the value on the server for the set to go through
+     * @return A future representing completion of the request, containing the new CAS value
+     */
+    CompletionStage<MemcacheStatus> add(String key, V value, int ttl, long cas);
 
-  /**
-   * Add a key in memcache with the provided value, with the specified TTL. Key must not exist in
-   * memcache
-   *
-   * @param key The key, must not be null
-   * @param value The value, must not be null
-   * @param ttl The TTL in seconds
-   * @param cas The CAS value, must match the value on the server for the set to go through
-   * @param flags Memcached flags
-   * @return A future representing completion of the request, containing the new CAS value
-   */
-  default CompletionStage<MemcacheStatus> add(String key, V value, int ttl, long cas, int flags) {
-    // B/C for existing implementations without flags handling
-    return add(key, value, ttl, cas);
-  }
+    default CompletionStage<MemcacheStatus> add(String key, V value, int ttl, long cas, int flags) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  /**
-   * Replace a key in memcache with the provided value, with the specified TTL. Key must exist in
-   * memcache
-   *
-   * @param key The key, must not be null
-   * @param value The value, must not be null
-   * @param ttl The TTL in seconds
-   * @param cas The CAS value, must match the value on the server for the set to go through
-   * @return A future representing completion of the request, containing the new CAS value
-   */
-  CompletionStage<MemcacheStatus> replace(String key, V value, int ttl, long cas);
+    /**
+     * Replace a key in memcache with the provided value, with the specified TTL. Key must exist in
+     * memcache
+     *
+     * @param key The key, must not be null
+     * @param value The value, must not be null
+     * @param ttl The TTL in seconds
+     * @param cas The CAS value, must match the value on the server for the set to go through
+     * @return A future representing completion of the request, containing the new CAS value
+     */
+    CompletionStage<MemcacheStatus> replace(String key, V value, int ttl, long cas);
 
-  /**
-   * Replace a key in memcache with the provided value, with the specified TTL. Key must exist in
-   * memcache
-   *
-   * @param key The key, must not be null
-   * @param value The value, must not be null
-   * @param ttl The TTL in seconds
-   * @param cas The CAS value, must match the value on the server for the set to go through
-   * @param flags Memcached flags
-   * @return A future representing completion of the request, containing the new CAS value
-   */
-  default CompletionStage<MemcacheStatus> replace(
-      String key, V value, int ttl, long cas, int flags) {
-    // B/C for existing implementations without flags handling
-    return replace(key, value, ttl, cas);
-  }
+    default CompletionStage<MemcacheStatus> replace(String key, V value, int ttl, long cas, int flags) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  /**
-   * Get the value for the provided key and sets the expiration
-   *
-   * @param ttl The TTL in seconds
-   * @param key The key, must not be null
-   * @return A future representing completion of the request, with the value, or null if the key
-   *     does not exist
-   */
-  CompletionStage<V> getAndTouch(String key, int ttl);
+    /**
+     * Get the value for the provided key and sets the expiration
+     *
+     * @param ttl The TTL in seconds
+     * @param key The key, must not be null
+     * @return A future representing completion of the request, with the value, or null if the key
+     *     does not exist
+     */
+    CompletionStage<V> getAndTouch(String key, int ttl);
 
-  /**
-   * Get the values for the provided keys and sets the expiration
-   *
-   * @param keys Keys, must not be null, nor must any key in the list
-   * @param ttl The TTL in seconds
-   * @return A future representing completion of the request, with the values. Any non existing
-   *     values will be null. Order will be maintained from the input keys
-   */
-  CompletionStage<List<V>> getAndTouch(List<String> keys, int ttl);
+    /**
+     * Get the values for the provided keys and sets the expiration
+     *
+     * @param keys Keys, must not be null, nor must any key in the list
+     * @param ttl The TTL in seconds
+     * @return A future representing completion of the request, with the values. Any non existing
+     *     values will be null. Order will be maintained from the input keys
+     */
+    CompletionStage<List<V>> getAndTouch(List<String> keys, int ttl);
 
-  /**
-   * Get the values for the provided keys and sets the expiration
-   *
-   * @param keys Keys, must not be null, nor must any key in the list
-   * @param ttl The TTL in seconds
-   * @return A future representing completion of the request, with a map of keys to values. Missing
-   *     values will be excluded from the map.
-   */
-  default CompletionStage<Map<String, V>> getAndTouchAsMap(List<String> keys, int ttl) {
-    return getAndTouch(keys, ttl).thenApply(values -> Utils.zipToMap(keys, values));
-  }
+    default CompletionStage<Map<String, V>> getAndTouchAsMap(List<String> keys, int ttl) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  /**
-   * Get the value for the provided key, including the CAS value, and sets the expiration
-   *
-   * @param key First key, must not be null
-   * @param ttl The TTL in seconds
-   * @return A future representing completion of the request, with the value, including the CAS
-   *     value, or null if the value does not exists.
-   */
-  CompletionStage<GetResult<V>> casGetAndTouch(String key, int ttl);
+    /**
+     * Get the value for the provided key, including the CAS value, and sets the expiration
+     *
+     * @param key First key, must not be null
+     * @param ttl The TTL in seconds
+     * @return A future representing completion of the request, with the value, including the CAS
+     *     value, or null if the value does not exists.
+     */
+    CompletionStage<GetResult<V>> casGetAndTouch(String key, int ttl);
 
-  /**
-   * Increment a counter for the provided key
-   *
-   * @param key The key, must not be null
-   * @param by The value to increment the counter by
-   * @param initial The initial value if the key does not exist
-   * @param ttl The TTL, in seconds
-   * @return A future representing completion of the request, with the new value of the counter
-   */
-  CompletionStage<Long> incr(String key, long by, long initial, int ttl);
+    /**
+     * Increment a counter for the provided key
+     *
+     * @param key The key, must not be null
+     * @param by The value to increment the counter by
+     * @param initial The initial value if the key does not exist
+     * @param ttl The TTL, in seconds
+     * @return A future representing completion of the request, with the new value of the counter
+     */
+    CompletionStage<Long> incr(String key, long by, long initial, int ttl);
 
-  /**
-   * Decrement a counter for the provided key
-   *
-   * @param key The key, must not be null
-   * @param by The value to decrement the counter by
-   * @param initial The initial value if the key does not exist
-   * @param ttl The TTL, in seconds
-   * @return A future representing completion of the request, with the new value of the counter
-   */
-  CompletionStage<Long> decr(String key, long by, long initial, int ttl);
+    /**
+     * Decrement a counter for the provided key
+     *
+     * @param key The key, must not be null
+     * @param by The value to decrement the counter by
+     * @param initial The initial value if the key does not exist
+     * @param ttl The TTL, in seconds
+     * @return A future representing completion of the request, with the new value of the counter
+     */
+    CompletionStage<Long> decr(String key, long by, long initial, int ttl);
 
-  CompletionStage<MemcacheStatus> append(String key, V value, long cas);
+    CompletionStage<MemcacheStatus> append(String key, V value, long cas);
 
-  CompletionStage<MemcacheStatus> prepend(String key, V value, long cas);
+    CompletionStage<MemcacheStatus> prepend(String key, V value, long cas);
 
-  /**
-   * Send a noop request
-   *
-   * @return A future representing completion of the request
-   */
-  CompletionStage<Void> noop();
+    /**
+     * Send a noop request
+     *
+     * @return A future representing completion of the request
+     */
+    CompletionStage<Void> noop();
 }

@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.ketama;
 
 import com.google.common.hash.HashCode;
@@ -22,11 +21,12 @@ import com.google.common.hash.Hashing;
 
 public final class Hasher {
 
-  private static final HashFunction MURMUR = Hashing.murmur3_32();
+    private static final HashFunction MURMUR = Hashing.murmur3_32();
 
-  public static HashCode hash(final byte[] key) {
-    return MURMUR.hashBytes(key);
-  }
+    public static HashCode hash(final byte[] key) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  private Hasher() {}
+    private Hasher() {
+    }
 }

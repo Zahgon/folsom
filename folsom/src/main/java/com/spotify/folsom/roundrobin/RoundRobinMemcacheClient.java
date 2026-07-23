@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.roundrobin;
 
 import com.spotify.folsom.RawMemcacheClient;
@@ -35,52 +34,39 @@ import java.util.stream.Stream;
  * reasonable thing to do if the IO operations is a bottleneck.
  */
 public class RoundRobinMemcacheClient extends AbstractMultiMemcacheClient {
-  private final AtomicInteger counter = new AtomicInteger(0);
-  private final List<RawMemcacheClient> clients;
-  private final int numClients;
 
-  public RoundRobinMemcacheClient(final List<RawMemcacheClient> clients) {
-    super(clients);
-    this.clients = clients;
-    numClients = clients.size();
-  }
+    private final AtomicInteger counter = new AtomicInteger(0);
 
-  @Override
-  public <T> CompletionStage<T> send(final Request<T> request) {
-    return getClient().send(request);
-  }
+    private final List<RawMemcacheClient> clients;
 
-  private RawMemcacheClient getClient() {
-    for (int i = 0; i < numClients; i++) {
-      // Make sure it stays positive
-      int c = counter.incrementAndGet() & 0x7FFFFFFF;
+    private final int numClients;
 
-      int index = c % numClients;
-      RawMemcacheClient client = clients.get(index);
-      if (client.isConnected()) {
-        return client;
-      }
+    public RoundRobinMemcacheClient(final List<RawMemcacheClient> clients) {
+        super(clients);
+        this.clients = clients;
+        numClients = clients.size();
     }
-    return NotConnectedClient.INSTANCE;
-  }
 
-  @Override
-  public Stream<AddressAndClient> streamNodes() {
-    final List<AddressAndClient> childNodes =
-        clients.stream().flatMap(RawMemcacheClient::streamNodes).collect(Collectors.toList());
-
-    final Set<HostAndPort> allAddresses =
-        childNodes.stream().map((AddressAndClient::getAddress)).collect(Collectors.toSet());
-
-    if (allAddresses.size() == 1) {
-      final List<RawMemcacheClient> allClients =
-          childNodes.stream().map(AddressAndClient::getClient).collect(Collectors.toList());
-      return Stream.of(
-          new AddressAndClient(
-              allAddresses.iterator().next(), new RoundRobinMemcacheClient(allClients)));
-    } else {
-      // Edge-case: we have to abandon the round-robin abstraction here
-      return childNodes.stream();
+    @Override
+    public <T> CompletionStage<T> send(final Request<T> request) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
-  }
+
+    private RawMemcacheClient getClient() {
+        for (int i = 0; i < numClients; i++) {
+            // Make sure it stays positive
+            int c = counter.incrementAndGet() & 0x7FFFFFFF;
+            int index = c % numClients;
+            RawMemcacheClient client = clients.get(index);
+            if (client.isConnected()) {
+                return client;
+            }
+        }
+        return NotConnectedClient.INSTANCE;
+    }
+
+    @Override
+    public Stream<AddressAndClient> streamNodes() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

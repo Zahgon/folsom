@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.ascii;
 
 import java.util.HashMap;
@@ -21,17 +20,17 @@ import java.util.Map;
 
 public class StatsAsciiResponse extends AsciiResponse {
 
-  public final Map<String, String> values = new HashMap<>();
+    public final Map<String, String> values = new HashMap<>();
 
-  public StatsAsciiResponse() {
-    super(Type.STATS);
-  }
+    public StatsAsciiResponse() {
+        super(Type.STATS);
+    }
 
-  public void addStat(String name, String value) {
-    values.put(name, value);
-  }
+    public void addStat(String name, String value) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public boolean isEmpty() {
-    return values.isEmpty();
-  }
+    public boolean isEmpty() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

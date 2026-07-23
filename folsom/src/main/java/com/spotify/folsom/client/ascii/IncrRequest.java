@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.ascii;
 
 import com.spotify.folsom.MemcacheAuthenticationException;
@@ -28,63 +27,48 @@ import java.nio.charset.StandardCharsets;
 
 public class IncrRequest extends AsciiRequest<Long> {
 
-  private static final byte[] INCR_CMD = "incr ".getBytes(StandardCharsets.US_ASCII);
-  private static final byte[] DECR_CMD = "decr ".getBytes(StandardCharsets.US_ASCII);
+    private static final byte[] INCR_CMD = "incr ".getBytes(StandardCharsets.US_ASCII);
 
-  private final byte[] operation;
-  private final long by;
+    private static final byte[] DECR_CMD = "decr ".getBytes(StandardCharsets.US_ASCII);
 
-  private IncrRequest(final byte[] operation, final byte[] key, final long by) {
-    super(key);
-    this.operation = operation;
-    this.by = by;
-  }
+    private final byte[] operation;
 
-  public static IncrRequest createIncr(final byte[] key, final long value) {
-    return new IncrRequest(INCR_CMD, key, value);
-  }
+    private final long by;
 
-  public static IncrRequest createDecr(final byte[] key, final long value) {
-    return new IncrRequest(DECR_CMD, key, value);
-  }
-
-  @Override
-  public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
-    // <command name> <key> <value> [noreply]\r\n
-    dst.put(operation);
-    dst.put(key);
-    dst.put(SPACE_BYTES);
-    dst.put(String.valueOf(by).getBytes());
-    dst.put(NEWLINE_BYTES);
-    return toBuffer(alloc, dst);
-  }
-
-  @Override
-  public Request<Long> duplicate() {
-    return new IncrRequest(operation, key, by);
-  }
-
-  @Override
-  public void handle(final AsciiResponse response, final HostAndPort server) throws IOException {
-    if (response instanceof NumericAsciiResponse) {
-      succeed(((NumericAsciiResponse) response).numericValue);
-    } else if (response.type == Type.NOT_FOUND) {
-      succeed(null);
-    } else if (response.type == AsciiResponse.Type.CLIENT_ERROR) {
-      MemcacheAuthenticationException exception =
-          new MemcacheAuthenticationException(
-              "Authentication required by server. Client not authenticated.");
-      fail(exception, server);
-    } else {
-      throw new IOException("Unexpected response type: " + response.type);
+    private IncrRequest(final byte[] operation, final byte[] key, final long by) {
+        super(key);
+        this.operation = operation;
+        this.by = by;
     }
-  }
 
-  public long getBy() {
-    return by;
-  }
+    public static IncrRequest createIncr(final byte[] key, final long value) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public long multiplier() {
-    return operation == INCR_CMD ? 1 : -1;
-  }
+    public static IncrRequest createDecr(final byte[] key, final long value) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Request<Long> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public void handle(final AsciiResponse response, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    public long getBy() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    public long multiplier() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

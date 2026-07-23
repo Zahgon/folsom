@@ -17,22 +17,20 @@ package com.spotify.folsom;
 
 public class ExponentialBackoff implements BackoffFunction {
 
-  private final long minTime;
-  private final long maxTime;
-  private final double factor;
+    private final long minTime;
 
-  public ExponentialBackoff(final long minTime, final long maxTime, final double factor) {
-    this.minTime = minTime;
-    this.maxTime = maxTime;
-    this.factor = factor;
-  }
+    private final long maxTime;
 
-  @Override
-  public long getBackoffTimeMillis(final int reconnectAttempt) {
-    if (reconnectAttempt <= 0) {
-      return 0;
+    private final double factor;
+
+    public ExponentialBackoff(final long minTime, final long maxTime, final double factor) {
+        this.minTime = minTime;
+        this.maxTime = maxTime;
+        this.factor = factor;
     }
 
-    return (long) Math.min(maxTime, minTime * Math.pow(factor, reconnectAttempt - 1));
-  }
+    @Override
+    public long getBackoffTimeMillis(final int reconnectAttempt) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

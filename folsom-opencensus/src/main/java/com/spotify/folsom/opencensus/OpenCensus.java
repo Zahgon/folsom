@@ -13,50 +13,39 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.opencensus;
 
 import com.spotify.folsom.Tracer;
 
-/** Starting point for the OpenCensus tracing implementation for Folsom */
+/**
+ * Starting point for the OpenCensus tracing implementation for Folsom
+ */
 public class OpenCensus {
 
-  private static final boolean DEFAULT_INCLUDE_KEYS = true;
-  private static final boolean DEFAULT_INCLUDE_VALUES = false;
+    private static final boolean DEFAULT_INCLUDE_KEYS = true;
 
-  /**
-   * Get tracer, usually to be provided to {@link
-   * com.spotify.folsom.MemcacheClientBuilder#withTracer(Tracer)}.
-   */
-  public static Tracer tracer() {
-    return new OpenCensusTracer(DEFAULT_INCLUDE_KEYS, DEFAULT_INCLUDE_VALUES);
-  }
+    private static final boolean DEFAULT_INCLUDE_VALUES = false;
 
-  public static class Builder {
-    private boolean includeKeys = DEFAULT_INCLUDE_KEYS;
-    private boolean includeValues = DEFAULT_INCLUDE_VALUES;
-
-    /**
-     * If true, the key used for an operation will be included as a span attribute. Default to true.
-     */
-    public Builder withIncludeKeys(final boolean includeKeys) {
-      this.includeKeys = includeKeys;
-      return this;
+    public static Tracer tracer() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    /**
-     * If true, the value used for an operation will be included as a span attribute. Default to
-     * false.
-     *
-     * <p>Note that enabling tracing with large values may add excessive load on the tracing system.
-     */
-    public Builder withIncludeValues(final boolean includeValues) {
-      this.includeValues = includeValues;
-      return this;
-    }
+    public static class Builder {
 
-    public Tracer build() {
-      return new OpenCensusTracer(includeKeys, includeValues);
+        private boolean includeKeys = DEFAULT_INCLUDE_KEYS;
+
+        private boolean includeValues = DEFAULT_INCLUDE_VALUES;
+
+        public Builder withIncludeKeys(final boolean includeKeys) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+
+        public Builder withIncludeValues(final boolean includeValues) {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+
+        public Tracer build() {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
     }
-  }
 }

@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.ascii;
 
 import com.spotify.folsom.GetResult;
@@ -28,69 +27,36 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
-public class GetRequest extends AsciiRequest<GetResult<byte[]>>
-    implements com.spotify.folsom.client.GetRequest {
+public class GetRequest extends AsciiRequest<GetResult<byte[]>> implements com.spotify.folsom.client.GetRequest {
 
-  private static final byte[] GET = "get ".getBytes(StandardCharsets.US_ASCII);
-  private static final byte[] CAS_GET = "gets ".getBytes(StandardCharsets.US_ASCII);
+    private static final byte[] GET = "get ".getBytes(StandardCharsets.US_ASCII);
 
-  private final byte[] cmd;
+    private static final byte[] CAS_GET = "gets ".getBytes(StandardCharsets.US_ASCII);
 
-  public GetRequest(final byte[] key, boolean withCas) {
-    super(key);
-    this.cmd = withCas ? CAS_GET : GET;
-  }
+    private final byte[] cmd;
 
-  @Override
-  public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
-    dst.put(cmd);
-    dst.put(key);
-    dst.put(NEWLINE_BYTES);
-    return toBuffer(alloc, dst);
-  }
-
-  @Override
-  public Request<GetResult<byte[]>> duplicate() {
-    return new GetRequest(key, this.cmd == CAS_GET);
-  }
-
-  @Override
-  public void handle(final AsciiResponse response, final HostAndPort server) throws IOException {
-    if (response.type == AsciiResponse.Type.EMPTY_LIST) {
-      succeed(null);
-      return;
+    public GetRequest(final byte[] key, boolean withCas) {
+        super(key);
+        this.cmd = withCas ? CAS_GET : GET;
     }
 
-    if (response.type == AsciiResponse.Type.CLIENT_ERROR) {
-      MemcacheAuthenticationException exception =
-          new MemcacheAuthenticationException(
-              "Authentication required by server. Client not authenticated.");
-      fail(exception, server);
-      return;
+    @Override
+    public ByteBuf writeRequest(final ByteBufAllocator alloc, final ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    if (!(response instanceof ValueAsciiResponse)) {
-      throw new IOException("Unexpected response type: " + response.type);
+    @Override
+    public Request<GetResult<byte[]>> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    List<ValueResponse> values = ((ValueAsciiResponse) response).values;
-
-    if (values.size() > 1) {
-      throw new IOException("Too many responses, expected 1 but got " + values.size());
+    @Override
+    public void handle(final AsciiResponse response, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
     }
 
-    ValueResponse valueResponse = values.get(0);
-    if (!Arrays.equals(valueResponse.key, key)) {
-      String message =
-          "Expected key " + decodeKey(key) + " but got " + decodeKey(valueResponse.key);
-      throw new IOException(message);
+    private String decodeKey(byte[] key1) {
+        // TODO: use charset from request object
+        return new String(key1, StandardCharsets.US_ASCII);
     }
-
-    succeed(GetResult.success(valueResponse.value, valueResponse.cas, valueResponse.flags));
-  }
-
-  private String decodeKey(byte[] key1) {
-    // TODO: use charset from request object
-    return new String(key1, StandardCharsets.US_ASCII);
-  }
 }

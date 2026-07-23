@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client;
 
 import com.spotify.folsom.Span;
@@ -22,51 +21,45 @@ import java.util.concurrent.CompletionStage;
 
 public class NoopTracer implements Tracer {
 
-  public static final NoopTracer INSTANCE = new NoopTracer();
-  private static final Span SPAN =
-      new Span() {
+    public static final NoopTracer INSTANCE = new NoopTracer();
+
+    private static final Span SPAN = new Span() {
+
         @Override
         public Span value(final byte[] value) {
-          return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public Span success() {
-          return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
         public Span failure() {
-          return this;
+            throw new UnsupportedOperationException("STUB: not implemented");
         }
 
         @Override
-        public void close() {}
-      };
+        public void close() {
+            throw new UnsupportedOperationException("STUB: not implemented");
+        }
+    };
 
-  private NoopTracer() {}
+    private NoopTracer() {
+    }
 
-  /** Create scoped span. Must be closed in order to end scope. */
-  public Span span(final String name, final CompletionStage<?> future, final String operation) {
-    return SPAN;
-  }
+    public Span span(final String name, final CompletionStage<?> future, final String operation) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public Span span(
-      final String name,
-      final CompletionStage<?> future,
-      final String operation,
-      final String key) {
-    return SPAN;
-  }
+    @Override
+    public Span span(final String name, final CompletionStage<?> future, final String operation, final String key) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public Span span(
-      final String name,
-      final CompletionStage<?> future,
-      final String operation,
-      final String key,
-      final byte[] value) {
-    return SPAN;
-  }
+    @Override
+    public Span span(final String name, final CompletionStage<?> future, final String operation, final String key, final byte[] value) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

@@ -27,48 +27,36 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-public class FlushRequest extends AsciiRequest<MemcacheStatus>
-    implements AllRequest<MemcacheStatus> {
+public class FlushRequest extends AsciiRequest<MemcacheStatus> implements AllRequest<MemcacheStatus> {
 
-  private static final byte[] CMD = "flush_all ".getBytes();
-  private static final byte[] NO_KEY = new byte[0];
-  private final int delay;
+    private static final byte[] CMD = "flush_all ".getBytes();
 
-  public FlushRequest(int delay) {
-    super(NO_KEY);
-    this.delay = delay;
-  }
+    private static final byte[] NO_KEY = new byte[0];
 
-  @Override
-  public ByteBuf writeRequest(ByteBufAllocator alloc, ByteBuffer dst) {
-    dst.put(CMD);
-    dst.put(String.valueOf(Utils.ttlToExpiration(delay)).getBytes());
-    dst.put(NEWLINE_BYTES);
-    return toBuffer(alloc, dst);
-  }
+    private final int delay;
 
-  @Override
-  protected void handle(AsciiResponse response, final HostAndPort server) throws IOException {
-    AsciiResponse.Type type = response.type;
-    if (type == AsciiResponse.Type.OK) {
-      succeed(MemcacheStatus.OK);
-    } else if (type == AsciiResponse.Type.CLIENT_ERROR) {
-      MemcacheAuthenticationException exception =
-          new MemcacheAuthenticationException(
-              "Authentication required by server. Client not authenticated.");
-      fail(exception, server);
-    } else {
-      throw new IOException("Unexpected line: " + type);
+    public FlushRequest(int delay) {
+        super(NO_KEY);
+        this.delay = delay;
     }
-  }
 
-  @Override
-  public MemcacheStatus merge(List<MemcacheStatus> results) {
-    return AllRequest.mergeMemcacheStatus(results);
-  }
+    @Override
+    public ByteBuf writeRequest(ByteBufAllocator alloc, ByteBuffer dst) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public Request<MemcacheStatus> duplicate() {
-    return new FlushRequest(delay);
-  }
+    @Override
+    protected void handle(AsciiResponse response, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public MemcacheStatus merge(List<MemcacheStatus> results) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    @Override
+    public Request<MemcacheStatus> duplicate() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

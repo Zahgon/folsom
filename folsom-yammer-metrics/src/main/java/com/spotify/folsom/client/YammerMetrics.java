@@ -13,11 +13,9 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.spotify.folsom.GetResult;
 import com.spotify.folsom.MemcacheStatus;
@@ -35,286 +33,215 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class YammerMetrics implements Metrics {
 
-  public static final String GROUP = "com.spotify.folsom";
+    public static final String GROUP = "com.spotify.folsom";
 
-  private final Timer gets;
-  private final Meter getHits;
-  private final Meter getMisses;
+    private final Timer gets;
 
-  private final Meter getSuccesses;
-  private final Meter getFailures;
+    private final Meter getHits;
 
-  private final Timer multigets;
-  private final Meter multigetSuccesses;
-  private final Meter multigetFailures;
+    private final Meter getMisses;
 
-  private final Timer sets;
-  private final Meter setSuccesses;
-  private final Meter setFailures;
+    private final Meter getSuccesses;
 
-  private final Timer deletes;
-  private final Meter deleteSuccesses;
-  private final Meter deleteFailures;
+    private final Meter getFailures;
 
-  private final Timer incrDecrs;
-  private final Meter incrDecrSuccesses;
-  private final Meter incrDecrFailures;
+    private final Timer multigets;
 
-  private final Timer touches;
-  private final Meter touchSuccesses;
-  private final Meter touchFailures;
+    private final Meter multigetSuccesses;
 
-  private final Set<OutstandingRequestsGauge> gauges = new CopyOnWriteArraySet<>();
+    private final Meter multigetFailures;
 
-  public YammerMetrics(final MetricsRegistry registry) {
-    this.gets = registry.newTimer(name("get", "requests"), SECONDS, SECONDS);
-    this.getSuccesses = registry.newMeter(name("get", "successes"), "Successes", SECONDS);
-    this.getHits = registry.newMeter(name("get", "hits"), "Hits", SECONDS);
-    this.getMisses = registry.newMeter(name("get", "misses"), "Misses", SECONDS);
-    this.getFailures = registry.newMeter(name("get", "failures"), "Failures", SECONDS);
+    private final Timer sets;
 
-    this.multigets = registry.newTimer(name("multiget", "requests"), SECONDS, SECONDS);
-    this.multigetSuccesses = registry.newMeter(name("multiget", "successes"), "Successes", SECONDS);
-    this.multigetFailures = registry.newMeter(name("multiget", "failures"), "Failures", SECONDS);
+    private final Meter setSuccesses;
 
-    this.sets = registry.newTimer(name("set", "requests"), SECONDS, SECONDS);
-    this.setSuccesses = registry.newMeter(name("set", "successes"), "Successes", SECONDS);
-    this.setFailures = registry.newMeter(name("set", "failures"), "Failures", SECONDS);
+    private final Meter setFailures;
 
-    this.deletes = registry.newTimer(name("delete", "requests"), SECONDS, SECONDS);
-    this.deleteSuccesses = registry.newMeter(name("delete", "successes"), "Successes", SECONDS);
-    this.deleteFailures = registry.newMeter(name("delete", "failures"), "Failures", SECONDS);
+    private final Timer deletes;
 
-    this.incrDecrs = registry.newTimer(name("incrdecr", "requests"), SECONDS, SECONDS);
-    this.incrDecrSuccesses = registry.newMeter(name("incrdecr", "successes"), "Successes", SECONDS);
-    this.incrDecrFailures = registry.newMeter(name("incrdecr", "failures"), "Failures", SECONDS);
+    private final Meter deleteSuccesses;
 
-    this.touches = registry.newTimer(name("touch", "requests"), SECONDS, SECONDS);
-    this.touchSuccesses = registry.newMeter(name("touch", "successes"), "Successes", SECONDS);
-    this.touchFailures = registry.newMeter(name("touch", "failures"), "Failures", SECONDS);
+    private final Meter deleteFailures;
 
-    final MetricName gaugeName = name("outstandingRequests", "count");
+    private final Timer incrDecrs;
 
-    registry.newGauge(
-        gaugeName,
-        new Gauge<Long>() {
-          @Override
-          public Long value() {
-            return getOutstandingRequests();
-          }
-        });
+    private final Meter incrDecrSuccesses;
 
-    final MetricName globalConnections = name("global-connections", "count");
-    registry.newGauge(
-        globalConnections,
-        new Gauge<Integer>() {
-          @Override
-          public Integer value() {
-            return Utils.getGlobalConnectionCount();
-          }
-        });
-  }
+    private final Meter incrDecrFailures;
 
-  @VisibleForTesting
-  long getOutstandingRequests() {
-    return gauges.stream().mapToLong(OutstandingRequestsGauge::getOutstandingRequests).sum();
-  }
+    private final Timer touches;
 
-  private MetricName name(final String type, final String name) {
-    return new MetricName(GROUP, type, name);
-  }
+    private final Meter touchSuccesses;
 
-  @Override
-  public void measureGetFuture(CompletionStage<GetResult<byte[]>> future) {
-    final TimerContext ctx = gets.time();
+    private final Meter touchFailures;
 
-    future.whenComplete(
-        (result, t) -> {
-          ctx.stop();
-          if (t == null) {
-            getSuccesses.mark();
-            if (result != null) {
-              getHits.mark();
-            } else {
-              getMisses.mark();
+    private final Set<OutstandingRequestsGauge> gauges = new CopyOnWriteArraySet<>();
+
+    public YammerMetrics(final MetricsRegistry registry) {
+        this.gets = registry.newTimer(name("get", "requests"), SECONDS, SECONDS);
+        this.getSuccesses = registry.newMeter(name("get", "successes"), "Successes", SECONDS);
+        this.getHits = registry.newMeter(name("get", "hits"), "Hits", SECONDS);
+        this.getMisses = registry.newMeter(name("get", "misses"), "Misses", SECONDS);
+        this.getFailures = registry.newMeter(name("get", "failures"), "Failures", SECONDS);
+        this.multigets = registry.newTimer(name("multiget", "requests"), SECONDS, SECONDS);
+        this.multigetSuccesses = registry.newMeter(name("multiget", "successes"), "Successes", SECONDS);
+        this.multigetFailures = registry.newMeter(name("multiget", "failures"), "Failures", SECONDS);
+        this.sets = registry.newTimer(name("set", "requests"), SECONDS, SECONDS);
+        this.setSuccesses = registry.newMeter(name("set", "successes"), "Successes", SECONDS);
+        this.setFailures = registry.newMeter(name("set", "failures"), "Failures", SECONDS);
+        this.deletes = registry.newTimer(name("delete", "requests"), SECONDS, SECONDS);
+        this.deleteSuccesses = registry.newMeter(name("delete", "successes"), "Successes", SECONDS);
+        this.deleteFailures = registry.newMeter(name("delete", "failures"), "Failures", SECONDS);
+        this.incrDecrs = registry.newTimer(name("incrdecr", "requests"), SECONDS, SECONDS);
+        this.incrDecrSuccesses = registry.newMeter(name("incrdecr", "successes"), "Successes", SECONDS);
+        this.incrDecrFailures = registry.newMeter(name("incrdecr", "failures"), "Failures", SECONDS);
+        this.touches = registry.newTimer(name("touch", "requests"), SECONDS, SECONDS);
+        this.touchSuccesses = registry.newMeter(name("touch", "successes"), "Successes", SECONDS);
+        this.touchFailures = registry.newMeter(name("touch", "failures"), "Failures", SECONDS);
+        final MetricName gaugeName = name("outstandingRequests", "count");
+        registry.newGauge(gaugeName, new Gauge<Long>() {
+
+            @Override
+            public Long value() {
+                throw new UnsupportedOperationException("STUB: not implemented");
             }
-          } else {
-            getFailures.mark();
-          }
         });
-  }
+        final MetricName globalConnections = name("global-connections", "count");
+        registry.newGauge(globalConnections, new Gauge<Integer>() {
 
-  @Override
-  public void measureMultigetFuture(CompletionStage<List<GetResult<byte[]>>> future) {
-    final TimerContext ctx = multigets.time();
-
-    future.whenComplete(
-        (result, t) -> {
-          ctx.stop();
-          if (t == null) {
-            multigetSuccesses.mark();
-            int hits = 0;
-            int total = result.size();
-            for (int i = 0; i < total; i++) {
-              if (result.get(i) != null) {
-                hits++;
-              }
+            @Override
+            public Integer value() {
+                throw new UnsupportedOperationException("STUB: not implemented");
             }
-            getHits.mark(hits);
-            getMisses.mark(total - hits);
-          } else {
-            multigetFailures.mark();
-          }
         });
-  }
+    }
 
-  @Override
-  public void measureDeleteFuture(CompletionStage<MemcacheStatus> future) {
-    final TimerContext ctx = deletes.time();
+    @VisibleForTesting
+    long getOutstandingRequests() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    future.whenComplete(
-        (result, t) -> {
-          ctx.stop();
-          if (t == null) {
-            deleteSuccesses.mark();
-          } else {
-            deleteFailures.mark();
-          }
-        });
-  }
+    private MetricName name(final String type, final String name) {
+        return new MetricName(GROUP, type, name);
+    }
 
-  @Override
-  public void measureSetFuture(CompletionStage<MemcacheStatus> future) {
-    final TimerContext ctx = sets.time();
+    @Override
+    public void measureGetFuture(CompletionStage<GetResult<byte[]>> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    future.whenComplete(
-        (result, t) -> {
-          ctx.stop();
-          if (t == null) {
-            setSuccesses.mark();
-          } else {
-            setFailures.mark();
-          }
-        });
-  }
+    @Override
+    public void measureMultigetFuture(CompletionStage<List<GetResult<byte[]>>> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureIncrDecrFuture(CompletionStage<Long> future) {
-    final TimerContext ctx = incrDecrs.time();
+    @Override
+    public void measureDeleteFuture(CompletionStage<MemcacheStatus> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    future.whenComplete(
-        (result, t) -> {
-          ctx.stop();
-          if (t == null) {
-            incrDecrSuccesses.mark();
-          } else {
-            incrDecrFailures.mark();
-          }
-        });
-  }
+    @Override
+    public void measureSetFuture(CompletionStage<MemcacheStatus> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void measureTouchFuture(CompletionStage<MemcacheStatus> future) {
-    final TimerContext ctx = touches.time();
+    @Override
+    public void measureIncrDecrFuture(CompletionStage<Long> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-    future.whenComplete(
-        (result, t) -> {
-          ctx.stop();
-          if (t == null) {
-            touchSuccesses.mark();
-          } else {
-            touchFailures.mark();
-          }
-        });
-  }
+    @Override
+    public void measureTouchFuture(CompletionStage<MemcacheStatus> future) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void registerOutstandingRequestsGauge(OutstandingRequestsGauge gauge) {
-    gauges.add(gauge);
-  }
+    @Override
+    public void registerOutstandingRequestsGauge(OutstandingRequestsGauge gauge) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  @Override
-  public void unregisterOutstandingRequestsGauge(OutstandingRequestsGauge gauge) {
-    gauges.remove(gauge);
-  }
+    @Override
+    public void unregisterOutstandingRequestsGauge(OutstandingRequestsGauge gauge) {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Timer getGets() {
-    return gets;
-  }
+    public Timer getGets() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getGetHits() {
-    return getHits;
-  }
+    public Meter getGetHits() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getGetMisses() {
-    return getMisses;
-  }
+    public Meter getGetMisses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getGetSuccesses() {
-    return getSuccesses;
-  }
+    public Meter getGetSuccesses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getGetFailures() {
-    return getFailures;
-  }
+    public Meter getGetFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Timer getMultigets() {
-    return multigets;
-  }
+    public Timer getMultigets() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getMultigetSuccesses() {
-    return multigetSuccesses;
-  }
+    public Meter getMultigetSuccesses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getMultigetFailures() {
-    return multigetFailures;
-  }
+    public Meter getMultigetFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Timer getSets() {
-    return sets;
-  }
+    public Timer getSets() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getSetSuccesses() {
-    return setSuccesses;
-  }
+    public Meter getSetSuccesses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getSetFailures() {
-    return setFailures;
-  }
+    public Meter getSetFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Timer getDeletes() {
-    return deletes;
-  }
+    public Timer getDeletes() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getDeleteSuccesses() {
-    return deleteSuccesses;
-  }
+    public Meter getDeleteSuccesses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getDeleteFailures() {
-    return deleteFailures;
-  }
+    public Meter getDeleteFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Timer getIncrDecrs() {
-    return incrDecrs;
-  }
+    public Timer getIncrDecrs() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getIncrDecrSuccesses() {
-    return incrDecrSuccesses;
-  }
+    public Meter getIncrDecrSuccesses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getIncrDecrFailures() {
-    return incrDecrFailures;
-  }
+    public Meter getIncrDecrFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Timer getTouches() {
-    return touches;
-  }
+    public Timer getTouches() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getTouchSuccesses() {
-    return touchSuccesses;
-  }
+    public Meter getTouchSuccesses() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 
-  public Meter getTouchFailures() {
-    return touchFailures;
-  }
+    public Meter getTouchFailures() {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
 }

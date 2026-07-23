@@ -13,7 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.spotify.folsom.client.ascii;
 
 import com.spotify.folsom.client.AbstractRequest;
@@ -22,17 +21,19 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public abstract class AsciiRequest<T> extends AbstractRequest<T> {
-  protected static final byte[] NEWLINE_BYTES = "\r\n".getBytes(StandardCharsets.US_ASCII);
-  protected static final byte SPACE_BYTES = ' ';
 
-  protected AsciiRequest(byte[] key) {
-    super(key);
-  }
+    protected static final byte[] NEWLINE_BYTES = "\r\n".getBytes(StandardCharsets.US_ASCII);
 
-  @Override
-  public void handle(final Object response, final HostAndPort server) throws IOException {
-    handle((AsciiResponse) response, server);
-  }
+    protected static final byte SPACE_BYTES = ' ';
 
-  protected abstract void handle(AsciiResponse response, HostAndPort server) throws IOException;
+    protected AsciiRequest(byte[] key) {
+        super(key);
+    }
+
+    @Override
+    public void handle(final Object response, final HostAndPort server) throws IOException {
+        throw new UnsupportedOperationException("STUB: not implemented");
+    }
+
+    protected abstract void handle(AsciiResponse response, HostAndPort server) throws IOException;
 }
